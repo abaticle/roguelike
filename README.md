@@ -2,7 +2,7 @@
 Tests Roguelike with ECS engine Phaser and Mithriljs
 
 Some tests to make a roguelike game based on :
-- A customer ECS engine 
+- A home made ECS engine 
 - Phaser 3
 - MithrilJS to display the user interface
 

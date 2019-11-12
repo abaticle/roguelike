@@ -124,7 +124,7 @@ class ECSHelper {
     }
 
     /**
-     * Get enemy entities
+     * Get enemy entities with health > 0
      * @param {number} friendlyEntityId Friendly unit id
      * @returns {number[]} Enemy entities
      */
@@ -132,7 +132,9 @@ class ECSHelper {
         const friendlyActor = this.ecs.get(friendlyEntityId, "actor")
 
         return this.ecs.searchEntities("actor").filter(entityId => {
-            if (this.ecs.get(entityId, "actor", "team") !== friendlyActor.team) {
+            const actor = this.ecs.get(entityId, "actor")
+
+            if (actor.health > 0 && actor.team !== friendlyActor.team) {
                 return true
             }
             return false
@@ -185,7 +187,6 @@ class ECSHelper {
         }
 
         return undefined
-
     }   
 
 
@@ -195,9 +196,8 @@ class ECSHelper {
      * @returns {number[]} Blocking entities
      */
     getProximityEnemyUnits(friendlyEntityId) {
-        const enemyActors = this.getEnemies(friendlyEntityId)
 
-        const friendlyPosition = this.ecs.get(friendlyEntityId, "position")
+        const enemyActors = this.getEnemies(friendlyEntityId)
         const friendlyPossiblePositions = this.getAroundPositions(friendlyEntityId)
 
         return enemyActors.filter(enemyEntityId => {

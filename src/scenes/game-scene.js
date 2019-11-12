@@ -43,7 +43,6 @@ class GameScene extends Phaser.Scene {
         this.drawMap()
         this.drawActors()
 
-        this.turn()
     }
 
     createUI() {
@@ -81,10 +80,12 @@ class GameScene extends Phaser.Scene {
     }
 
     drawActors() {
-        this.ecs.searchEntities(["display", "position"]).map(entityId => {
+        this.ecs.searchEntities(["display", "position", "actor"]).map(entityId => {
+
             const {
                 display,
-                position
+                position,
+                actor
             } = this.ecs.get(entityId)
 
             if (!display.sprite) {
@@ -99,8 +100,19 @@ class GameScene extends Phaser.Scene {
             }
 
             else {
-                display.sprite.x = (32 * position.x) + 16
-                display.sprite.y = (32 * position.y) + 16                
+
+                //Move sprite
+                if (actor.health > 0) {
+                    display.sprite.x = (32 * position.x) + 16
+                    display.sprite.y = (32 * position.y) + 16                
+                }
+                
+                //Destroy sprite
+                else {
+                    display.sprite.destroy()
+                }
+
+                
             }
                 
 
@@ -165,15 +177,20 @@ class GameScene extends Phaser.Scene {
 
     createActorEntities() {
         this.createActorEntity(0, "Soldier", 0, 1)
-        this.createActorEntity(0, "Soldier", 1, 2)
-        this.createActorEntity(0, "Soldier", 1, 3)
+        this.createActorEntity(0, "Soldier", 0, 2)
+        this.createActorEntity(0, "Soldier", 0, 3)
+        this.createActorEntity(0, "Soldier", 0, 4)
 
-        this.createActorEntity(1, "Gobelin", 7, 1)
-        this.createActorEntity(1, "Gobelin", 7, 2)
-        this.createActorEntity(1, "Gobelin", 7, 3)
+        this.createActorEntity(1, "Gobelin", 9, 1)
+        this.createActorEntity(1, "Gobelin", 9, 2)
+        this.createActorEntity(1, "Gobelin", 9, 3)
+        this.createActorEntity(1, "Gobelin", 8, 1)
+        this.createActorEntity(1, "Gobelin", 8, 2)
+        this.createActorEntity(1, "Gobelin", 8, 3)
     }
 
     update(time) {
+
         /*
         this.systems.forEach(system => {
             system.update(time)

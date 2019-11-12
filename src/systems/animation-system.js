@@ -3,7 +3,7 @@ import ECS from "./../lib/ecs"
 class AnimationSystem {
 
     /**
-     * 
+     * Class constructor
      * @param {ECS} ecs 
      */
     constructor(ecs) {

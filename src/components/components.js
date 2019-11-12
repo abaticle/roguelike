@@ -13,8 +13,7 @@ export const ActorComponent = {
     name: "actor",
     desc: "Actor description", 
     health: 20,
-    team: 0,
-    actionPoints: 10
+    team: 0
 } 
 
 export const DisplayComponent = {
