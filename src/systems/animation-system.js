@@ -1,21 +1,5 @@
 import ECS from "./../lib/ecs"
 
-/**
- * @typedef {object} position
- * @property {number} x X Position
- * @property {number} y Y Position
- */
-
-/**
- * @typedef {object} MoveAction 
- * @property {string} type Type of message (move)
- * @property {number} entityId Moving entity
- * @property {position} nextPosition Target position
- */
-
-
-
-
 class AnimationSystem {
 
     /**
@@ -27,26 +11,42 @@ class AnimationSystem {
     }
 
 
+    /**
+     * Remove first message
+     */
+    shiftMessage() {
+        const actions = this.ecs.get("Game", "game", "actions")
+
+        actions.shift()
+    }
+
+    /**
+     * Get game speed
+     * @returns {number} Current game speed
+     */
     getSpeed(speed) {
         return ecs.get("Game", "game", "speed")
     }
 
     /**
-     * @param {MoveAction} action Move message 
+     * Animate movement
+     * @param {MoveMessage} message Move message 
      */
-    animateMove(action) {
-
+    animateMove(message) {
+        
         const {
             display 
-        } = this.ecs.get(action.entityId, "display")
-
-        
+        } = this.ecs.get(message.entityId, "display")        
 
 
     }
 
-    animateMelee() {
-
+    /**
+     * Animate melee movements
+     * @param {AttackMeleeMessage} message Melee attack message
+     */
+    animateMelee(message) {
+        
     }
 
     /**
@@ -58,8 +58,8 @@ class AnimationSystem {
 
 
     update() {
-        let actions = this.ecs.get("Game", "game", "actions")
 
+        let actions = this.ecs.get("Game", "game", "actions")
 
         actions.forEach(action => {
             switch (action.type) {
@@ -76,5 +76,9 @@ class AnimationSystem {
                     break
             }
         })
+
+
     }
 }
+
+export default AnimationSystem

@@ -12,21 +12,20 @@ export default class MessageHelper {
         this.ecsHelper = new ECSHelper(ecs)
     }
 
-
+    
     pushMessage(message) {
         const actions = this.ecs.get("Game", "game", "actions")
 
         actions.push(message)
     }
 
-
     /**
      * Move an entity
      * @param {*} entityId Entity to move
-     * @param {position} nextPosition Next position, with X/Y values 
+     * @param {Position} nextPosition Next position, with X/Y values 
      */
     createMoveMessage(entityId, nextPosition) {
-        
+                
         //Update entity position
         const position = this.ecs.get(entityId, "position")
 
@@ -55,7 +54,6 @@ export default class MessageHelper {
         //TODO:Calculate damages from strength ?
         let damages = 10
 
-
         //Push melee attack message
         this.pushMessage({
             type: "attackMelee",
@@ -80,6 +78,11 @@ export default class MessageHelper {
         }
     }
 
+    /**
+     * Ranged attack
+     * @param {number} entityId 
+     * @param {number} targetEntityId 
+     */
     createAttackRanged(entityId, targetEntityId) {
 
     }
