@@ -1,6 +1,6 @@
 import ECS from "./ecs"
 import ECSHelper from "./ecs-helper"
-import { Utils } from "phaser"
+import Utils from "./../other/utils"
 
 export default class MessageHelper {
     

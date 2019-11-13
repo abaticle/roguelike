@@ -155,6 +155,7 @@ class GameScene extends Phaser.Scene {
         ])
 
         let {
+            ai,
             position, 
             actor,
             display
@@ -166,20 +167,35 @@ class GameScene extends Phaser.Scene {
         actor.desc = desc 
         actor.team = team
 
-        if (desc === "Soldier") {
-            display.frame = 0
-        }
-        else {
-            display.frame = 12
+
+        switch(desc) {
+            case "Soldier":
+                display.frame = 1
+                ai.mode = "melee" 
+                break
+
+            case "Archer":
+                display.frame = 2
+                ai.mode = "ranged" 
+                break
+                
+            case "Gobelin":
+                display.frame = 12
+                ai.mode = "melee" 
+                break
+
         }
 
     }
 
     createActorEntities() {
-        this.createActorEntity(0, "Soldier", 0, 1)
-        this.createActorEntity(0, "Soldier", 0, 2)
-        this.createActorEntity(0, "Soldier", 0, 3)
-        this.createActorEntity(0, "Soldier", 0, 4)
+
+        this.createActorEntity(0, "Soldier", 3, 1)
+        this.createActorEntity(0, "Soldier", 3, 2)
+        this.createActorEntity(0, "Soldier", 3, 3)        
+        this.createActorEntity(0, "Archer", 1, 1)
+        this.createActorEntity(0, "Archer", 1, 2)
+        this.createActorEntity(0, "Archer", 1, 3)
 
         this.createActorEntity(1, "Gobelin", 9, 1)
         this.createActorEntity(1, "Gobelin", 9, 2)

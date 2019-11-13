@@ -41,7 +41,7 @@ class MovementSystem {
         
         let enemyId = this.ecsHelper.getClosestEnemyUnit(entityId)
 
-        let distance = this.ecs.ecsHelper.getDistanceBetweenEntities(entityId, enemyId)
+        let distance = this.ecsHelper.getDistanceBetweenEntities(entityId, enemyId)
 
         let targetPosition
 
@@ -92,7 +92,7 @@ class MovementSystem {
                     break
 
                 case "ranged":
-                    this.moveRanged()    
+                    this.moveRanged(entityId)    
                     break
             }
 
