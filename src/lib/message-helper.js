@@ -1,5 +1,6 @@
 import ECS from "./ecs"
 import ECSHelper from "./ecs-helper"
+import { Utils } from "phaser"
 
 export default class MessageHelper {
     
@@ -13,9 +14,13 @@ export default class MessageHelper {
     }
 
     
+    /**
+     * 
+     * @param {MoveMessage|AttackMeleeMessage|AttackRangedMessage} message 
+     */
     pushMessage(message) {
         const actions = this.ecs.get("Game", "game", "actions")
-
+        
         actions.push(message)
     }
 
@@ -51,8 +56,8 @@ export default class MessageHelper {
      */
     createAttackMelee(entityId, targetEntityId) {
 
-        //TODO:Calculate damages from strength ?
-        let damages = 10
+        //TODO:Calculate damages from strength for melee attack ?
+        let damages = Utils.randomInteger(4, 8)
 
         //Push melee attack message
         this.pushMessage({
@@ -72,7 +77,9 @@ export default class MessageHelper {
 
             this.pushMessage({
                 type: "die",
-                from: targetEntityId
+                from: targetEntityId,
+                killedBy: entityId,
+                damages: damages
             })            
 
         }
@@ -85,9 +92,35 @@ export default class MessageHelper {
      */
     createAttackRanged(entityId, targetEntityId) {
 
+        //TODO:Calculate damages from strength for ranged attack ?
+        let damages = Utils.randomInteger(2, 6)
+
+        //Push ranged attack message
+        this.pushMessage({
+            type: "attackRanged",
+            from: entityId,
+            to: targetEntityId,
+            damages: damages
+        })
+
+        //Remove health from target entity, and send die message if dead
+        const targetActor = this.ecs.get(targetEntityId, "actor")
+
+        targetActor.health -= damages
+
+        if (targetActor.health <= 0) {
+
+            this.pushMessage({
+                type: "die",
+                from: targetEntityId,
+                killedBy: entityId,
+                damages: damages
+            })            
+
+        }        
     }
 
-    createDieMessage(entityId) {
+    createDie(entityId) {
         this.pushMessage({
             type: "die",
             from: entityId

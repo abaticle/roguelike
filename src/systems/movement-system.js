@@ -37,7 +37,37 @@ class MovementSystem {
         }
     }
 
-    moveRanged() {
+    moveRanged(entityId) {
+        
+        let enemyId = this.ecsHelper.getClosestEnemyUnit(entityId)
+
+        let distance = this.ecs.ecsHelper.getDistanceBetweenEntities(entityId, enemyId)
+
+        let targetPosition
+
+        //Flee ?
+        if (distance < 4) {
+            targetPosition = this.ecsHelper.getOpositePositionTowardEntity(entityId, enemyId)
+
+            if (targetPosition) {
+                this.messageHelper.createMoveMessage(entityId, targetPosition)  
+            }
+        }
+
+        //Move toward entity
+        else if (distance > 10) {
+            targetPosition = this.ecsHelper.getNextPositionTowardEntity(entityId, enemyId)
+
+            if (targetPosition) {                
+                this.messageHelper.createMoveMessage(entityId, targetPosition)                
+            }            
+        }
+
+        //Shoot
+        else {
+            this.messageHelper.createAttackRanged(entityId, enemyId)
+        }
+
 
     }
 

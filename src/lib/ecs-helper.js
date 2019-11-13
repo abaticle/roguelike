@@ -40,9 +40,9 @@ class ECSHelper {
 
     /**
      * Set position as walkable/not walkable on map
-     * @param {number} x 
-     * @param {number} y 
-     * @param {boolean} walkable 
+     * @param {number} x X Position
+     * @param {number} y Y Position
+     * @param {boolean} walkable Walkable or not
      */
     setWalkable(x, y, walkable) {
         const grid = this.ecs.get("Map", "map", "grid")
@@ -51,6 +51,50 @@ class ECSHelper {
     }
 
 
+    /**
+     * Check position is walkable
+     * @param {number} x X Position
+     * @param {number} y Y Position
+     */
+    getWalkable(x, y) {
+        const grid = this.ecs.get("Map", "map", "grid")
+        
+        return grid.isWalkableAt(x, y)
+    }
+
+    /**
+     * Get flee position toward an entity
+     * @param {number} entityFromId 
+     * @param {number} entityToId 
+     */
+    getOpositePositionTowardEntity(entityFromId, entityToId) {
+        const positionFrom = this.ecs.get(entityFromId, "position")
+        const positionTo = this.ecs.get(entityToId, "position")
+
+
+        //Get all position arround entity
+        const positions = this.getAroundPositions(entityFromId)
+
+        //Get longest distance from target from theses positions
+        let range = 0
+        let positionToReturn
+
+        positions.forEach(position => {
+
+            let distance = Utils.distance(position.x, positionTo.x, position.y, positionTo.y)
+
+            if (distance > range) {
+                positionToReturn = {
+                    x: position.x,
+                    y: position.y
+                }
+                range = distance
+            }
+        })
+
+        return positionToReturn
+
+    }
 
     /**
      * Get next position toward an entity
@@ -110,10 +154,13 @@ class ECSHelper {
 
                     if (x >= 0 && x < this.getMapWidth()) {
                         if (y >= 0 && y < this.getMapHeight()) {
-                            positions.push({
-                                x,
-                                y
-                            })
+
+                            if (this.getWalkable(x, y)) {
+                                positions.push({
+                                    x,
+                                    y
+                                })
+                            }
                         }
                     }                    
                 }
@@ -142,16 +189,19 @@ class ECSHelper {
     }
 
 
+    
+
+
     /**
      * Get closest entity enemy
      * @param {number} friendlyEntityId Entity to search from 
+     * @param {number} range Maximum range
      * @returns {number} Closest enemy
      */
-    getClosestEnemyUnit(friendlyEntityId) {
+    getClosestEnemyUnit(friendlyEntityId, range = 9999) {
 
         const unitPosition = this.ecs.get(friendlyEntityId, "position")
 
-        let maxDistance = 9999
         let enemy = -1
 
         this.getEnemies(friendlyEntityId).forEach(enemyEntityId => {
@@ -159,8 +209,8 @@ class ECSHelper {
 
             let newDistance = Utils.distance(unitPosition.x, unitPosition.y, enemyPosition.x, enemyPosition.y)
 
-            if (newDistance < maxDistance) {
-                maxDistance = newDistance
+            if (newDistance < range) {
+                range = newDistance
                 enemy = enemyEntityId
             }
         })
@@ -171,6 +221,20 @@ class ECSHelper {
 
         return enemy
 
+    }
+
+
+    /**
+     * Get distance between 2 entities
+     * @param {number} entityFrom 
+     * @param {number} entityTo 
+     * @returns {number} Distance 
+     */
+    getDistanceBetweenEntities(entityFrom, entityTo) {
+        const entityFromPosition = this.ecs.get(entityFrom, "position")
+        const entityToPosition = this.ecs.get(entityTo, "position")
+
+        return Utils.distance(entityFromPosition.x, entityFromPosition.y, entityToPosition.x, entityToPosition.y)
     }
 
     /**

@@ -1,8 +1,3 @@
-/**
- * @typedef {object} Position
- * @property {number} x X Position
- * @property {number} y Y Position
- */
 
 /**
  * @typedef {object} MoveMessage 
