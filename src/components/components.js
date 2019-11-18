@@ -25,6 +25,7 @@ export const DisplayComponent = {
 
 export const GameComponent = {
     name: "game",
+    ui: undefined,
     speed: 1,
     turn: 0,
     actions: []

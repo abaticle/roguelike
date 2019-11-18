@@ -363,6 +363,10 @@ export default class ECS {
      */
     get(entityId, componentName, path) {
 
+        if (entityId === undefined) {
+            throw new Error('Entity is undefined')
+        }
+
         if (entityId) {
             if (typeof entityId === "string") {
                 entityId = this.getAlias(entityId)

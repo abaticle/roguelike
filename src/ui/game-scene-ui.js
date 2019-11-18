@@ -8,9 +8,7 @@ export default class GameSceneUI {
         this.scene = scene
         this.ecs = scene.ecs
 
-        this.data = {
-            
-        }
+        this.message = ""
 
         this.comp = {
             oninit: () => {
@@ -22,12 +20,18 @@ export default class GameSceneUI {
                         onclick: () => {
                             this.scene.turn()
                         }
-                    }, "Next turn")
+                    }, "Next turn"),
+                    m("div", this.message)
                 ])
             }
         }
 
         m.mount(document.getElementById("ui"), this.comp)
+    }
+
+
+    updateMessage(message) {
+        this.message = JSON.stringify(message)
     }
 
 }

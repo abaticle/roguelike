@@ -1,6 +1,7 @@
 import Phaser from "phaser"
 import ECS from "../lib/ecs"
 import MovementSystem from "../systems/movement-system"
+import AnimationSystem from "../systems/animation-system"
 import { AllComponent } from "./../components/components"
 import PreparePathfindingSystem from "../systems/prepare-pathfinding"
 import GameSceneUI from "./../ui/game-scene-ui"
@@ -13,13 +14,14 @@ class GameScene extends Phaser.Scene {
         })
         
         this.ecs = new ECS()
-        window.ecs = this.ecs
-
-        this.systems = []
+        this.systems = {}
         this.working = false
+        
+        window.ecs = this.ecs
     }
 
     preload() {
+        this.load.image("arrow1", "assets/arrpw.png")
         this.load.image("ground1", "assets/dg_grounds32.gif")
         this.load.spritesheet("monsters1", "assets/dg_monster132.png", {
             frameWidth: 32,
@@ -29,45 +31,47 @@ class GameScene extends Phaser.Scene {
 
     create() {
 
-        AllComponent.map((component)=> {
-            this.ecs.registerComponent(component)
-        })
+        this.registerComponents()
 
         this.createGameEntity()
         this.createMapEntity()
         this.createActorEntities()
         this.createSystems()
-        this.createUI()
-
 
         this.drawMap()
         this.drawActors()
 
     }
+    
+    registerComponents() {
 
-    createUI() {
-        const gameUi = new GameSceneUI(this)
-    }
-
-    turn() {
-        this.ecs.set([], "Game", "game", "actions")
-        
-        this.systems.forEach(system => {
-            system.update()
+        AllComponent.map((component)=> {
+            this.ecs.registerComponent(component)
         })
 
-        console.log(this.ecs.get("Game", "game", "actions"))
-
-        this.drawActors()
     }
 
-
-
     createSystems() {
-        this.systems = [
-            new PreparePathfindingSystem(this.ecs),
-            new MovementSystem(this.ecs)
-        ]
+        this.systems = {
+            preparePathfinding: new PreparePathfindingSystem(this.ecs),
+            movement: new MovementSystem(this.ecs),
+            animation: new AnimationSystem(this.ecs, this)
+        }
+    }
+    
+    turn() {
+
+        let actions = this.ecs.get("Game", "game", "actions")
+
+        if (actions.length === 0) {
+            this.systems.preparePathfinding.update()
+            this.systems.movement.update()
+
+            this.systems.animation.update()
+        }
+
+        //this.systems.animation.step()
+        
     }
 
     drawMap() {
@@ -84,38 +88,15 @@ class GameScene extends Phaser.Scene {
 
             const {
                 display,
-                position,
-                actor
+                position
             } = this.ecs.get(entityId)
 
-            if (!display.sprite) {
-
-                display.sprite = this.make.sprite({
-                    key: "monsters1",
-                    frame: display.frame,
-                    x: (32 * position.x) + 16,
-                    y: (32 * position.y) + 16
-                })
-
-            }
-
-            else {
-
-                //Move sprite
-                if (actor.health > 0) {
-                    display.sprite.x = (32 * position.x) + 16
-                    display.sprite.y = (32 * position.y) + 16                
-                }
-                
-                //Destroy sprite
-                else {
-                    display.sprite.destroy()
-                }
-
-                
-            }
-                
-
+            display.sprite = this.make.sprite({
+                key: "monsters1",
+                frame: display.frame,
+                x: (32 * position.x) + 16,
+                y: (32 * position.y) + 16
+            })
         })
     }
 
@@ -123,6 +104,8 @@ class GameScene extends Phaser.Scene {
         let gameEntity = this.ecs.createEntity("game")
         
         this.ecs.createAlias("Game", gameEntity)
+
+        this.ecs.set(new GameSceneUI(this), "Game", "game", "ui")
     }
 
     createMapEntity() {
@@ -130,14 +113,14 @@ class GameScene extends Phaser.Scene {
         this.ecs.createAlias("Map", mapEntity)
 
         const map = {
-            width: 100,
-            height: 50,
+            width: 20,
+            height: 10,
             layout: []
         }
 
-        for (let i = 0; i < map.width; i++) {
+        for (let i = 0; i < map.height; i++) {
             let row = []
-            for (let j = 0; j < map.height; j++) {
+            for (let j = 0; j < map.width; j++) {
                 row.push(10)
             }
             map.layout.push(row)
@@ -190,9 +173,9 @@ class GameScene extends Phaser.Scene {
 
     createActorEntities() {
 
-        this.createActorEntity(0, "Soldier", 3, 1)
-        this.createActorEntity(0, "Soldier", 3, 2)
-        this.createActorEntity(0, "Soldier", 3, 3)        
+        //this.createActorEntity(0, "Soldier", 3, 1)
+        //this.createActorEntity(0, "Soldier", 3, 2)
+        //this.createActorEntity(0, "Soldier", 3, 3)        
         this.createActorEntity(0, "Archer", 1, 1)
         this.createActorEntity(0, "Archer", 1, 2)
         this.createActorEntity(0, "Archer", 1, 3)
@@ -206,12 +189,6 @@ class GameScene extends Phaser.Scene {
     }
 
     update(time) {
-
-        /*
-        this.systems.forEach(system => {
-            system.update(time)
-        })
-        */
 
     }
 }

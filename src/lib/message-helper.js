@@ -66,7 +66,6 @@ export default class MessageHelper {
             to: targetEntityId,
             damages: damages
         })
-
         
         //Remove health from target entity, and send die message if dead
         const targetActor = this.ecs.get(targetEntityId, "actor")
@@ -77,7 +76,7 @@ export default class MessageHelper {
 
             this.pushMessage({
                 type: "die",
-                from: targetEntityId,
+                entityId: targetEntityId,
                 killedBy: entityId,
                 damages: damages
             })            
@@ -112,19 +111,12 @@ export default class MessageHelper {
 
             this.pushMessage({
                 type: "die",
-                from: targetEntityId,
+                entityId: targetEntityId,
                 killedBy: entityId,
                 damages: damages
             })            
 
         }        
-    }
-
-    createDie(entityId) {
-        this.pushMessage({
-            type: "die",
-            from: entityId
-        })
     }
 
 }
