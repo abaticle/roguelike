@@ -11,6 +11,49 @@ class ECSHelper {
         this.ecs = ecs
     }   
 
+    getEntityAtMousePosition(position, alive = true) {
+        const pos = {
+            x: parseInt(position.x / 32),
+            y: parseInt(position.y / 32) 
+        }
+
+        return this.getEntityAtPosition(pos, alive)
+    }
+
+    /**
+     * Search entity by position
+     * @param {Object} position 
+     * @param {number} position.x
+     * @param {number} position.y
+     * @param {boolean} alive 
+     * @returns {number|undefined} Entity found or undefined
+     */
+    getEntityAtPosition(position, alive = true) {
+        
+        const x = position.x
+        const y = position.y 
+
+        return this.ecs.searchEntities(["actor", "position"]).find(entityId => {
+            const {
+                position,
+                actor
+            } = this.ecs.get(entityId)
+
+            if (position.x === x && position.y === y) {
+                if (alive && actor.health > 0) {
+                    return true
+                }
+                if (!alive) {
+                    return true
+                }
+                return false
+                
+            }
+
+            return false
+        })
+    }
+
 
     /**
      * Get path between two points
@@ -73,13 +116,13 @@ class ECSHelper {
 
 
         //Get all position arround entity
-        const positions = this.getAroundPositions(entityFromId)
+        const aroundPositions = this.getAroundPositions(entityFromId)
 
         //Get longest distance from target from theses positions
         let range = 0
         let positionToReturn
 
-        positions.forEach(position => {
+        aroundPositions.forEach(position => {
 
             let distance = Utils.distance(position.x, positionTo.x, position.y, positionTo.y)
 
@@ -139,8 +182,9 @@ class ECSHelper {
     }
 
     /**
-     * Get possible position around entity
-     * @param {Position[]} entityId 
+     * Get possible walkables position around entity
+     * @param {number} entityId Entity id
+     * @returns {Position[]} entityId 
      */
     getAroundPositions(entityId) {
         const position = this.ecs.get(entityId, "position")
@@ -155,12 +199,10 @@ class ECSHelper {
                     if (x >= 0 && x < this.getMapWidth()) {
                         if (y >= 0 && y < this.getMapHeight()) {
 
-                            if (this.getWalkable(x, y)) {
-                                positions.push({
-                                    x,
-                                    y
-                                })
-                            }
+                            positions.push({
+                                x,
+                                y
+                            })
                         }
                     }                    
                 }
@@ -181,7 +223,7 @@ class ECSHelper {
         return this.ecs.searchEntities("actor").filter(entityId => {
             const actor = this.ecs.get(entityId, "actor")
 
-            if (actor.health > 0 && actor.team !== friendlyActor.team) {
+            if (actor.health > 0 && actor.teamId !== friendlyActor.teamId) {
                 return true
             }
             return false
@@ -264,7 +306,9 @@ class ECSHelper {
         const enemyActors = this.getEnemies(friendlyEntityId)
         const friendlyPossiblePositions = this.getAroundPositions(friendlyEntityId)
 
-        return enemyActors.filter(enemyEntityId => {
+        let result = enemyActors.filter(enemyEntityId => {
+            
+            const ownPosition = this.ecs.get(friendlyEntityId, "position")
             const enemyPosition = this.ecs.get(enemyEntityId, "position")
 
             const found = friendlyPossiblePositions.find(position => {
@@ -280,6 +324,8 @@ class ECSHelper {
 
             return false
         })
+
+        return result
     }
 }
 

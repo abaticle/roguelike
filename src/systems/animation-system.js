@@ -1,10 +1,12 @@
 import ECS from "./../lib/ecs"
+import Utils from "./../other/utils"
 
 const TILE_SIZE = 32
 const TILE_MIDLE_SIZE = 16
 const MOVE_DURATION = 50
-const RANGED_ATTACK_DURATION = 100
-const MELEE_ATTACK_DURATION = 100
+const RANGED_ATTACK_DURATION = 40
+const MELEE_ATTACK_DURATION = 40
+const DIE_DURATION = 30
 
 class AnimationSystem {
 
@@ -15,8 +17,7 @@ class AnimationSystem {
     constructor(ecs, scene) {
         this.ecs = ecs
         this.scene = scene
-
-        this.working = false
+        this.timeline = undefined
     }
 
 
@@ -48,8 +49,7 @@ class AnimationSystem {
             position
         } = this.ecs.get(message.entityId)        
 
-
-        this.scene.tweens.add({
+        this.timeline.add({
             targets: display.sprite,
             x: (TILE_SIZE * position.x) + TILE_MIDLE_SIZE,
             y: (TILE_SIZE * position.y) + TILE_MIDLE_SIZE,
@@ -68,6 +68,22 @@ class AnimationSystem {
      */
     animateMelee(message) {
         
+        const {
+            display, 
+            position
+        } = this.ecs.get(message.from)
+
+        const toPosition = this.ecs.get(message.to, "position")
+        const targetPosition = Utils.getPositionBetweenTwoPoints(position.x, position.y, toPosition.x, toPosition.y)
+
+        this.timeline.add({
+            targets: display.sprite,
+            x: (TILE_SIZE * targetPosition.x) + TILE_MIDLE_SIZE,
+            y: (TILE_SIZE * targetPosition.y) + TILE_MIDLE_SIZE,
+            duration: MELEE_ATTACK_DURATION,
+            yoyo: true
+        })
+
     }
 
 
@@ -76,8 +92,6 @@ class AnimationSystem {
      * @param {{type: string, from: number, to: number, damages: number}} message Animation message
      */
     animateRanged(message) {
-
-        console.log("ranged")
 
         const fromPosition = this.ecs.get(message.from, "position")
         const toPosition = this.ecs.get(message.to, "position")
@@ -88,8 +102,7 @@ class AnimationSystem {
             key: "arrow1"
         })
 
-
-        this.scene.tweens.add({
+        this.timeline.add({
             targets: sprite,
             x: (32 * toPosition.x) + 16,
             y: (32 * toPosition.y) + 16,
@@ -115,24 +128,21 @@ class AnimationSystem {
             display 
         } = this.ecs.get(message.entityId)        
 
-        display.sprite.destroy()
+        //display.sprite.destroy()
 
+        this.timeline.add({
+            targets: display.sprite,
+            ease: 'Power1',
+            duration: DIE_DURATION,
+            alpha: 0,
+            onStart: () => {},
+            onComplete: () => {
+                display.sprite.destroy()
+            }
+        });
     }
 
-
-
-    step() {
-
-        const actions = this.ecs.get("Game", "game", "actions")
-        let action = actions.shift()
-
-        this.animateAction(action)  
-
-        this.ecs.get("Game", "game", "ui").updateMessage(action)
-    }
-
-
-    animateAction(action) {
+    handleAction(action) {
         switch (action.type) {
             case "move":
                 this.animateMove(action)
@@ -152,19 +162,26 @@ class AnimationSystem {
         }
     }
 
+    step() {
+
+        const actions = this.ecs.get("Game", "game", "actions")
+        let action = actions.shift()
+
+        this.handleAction(action)  
+        
+    }
 
     update() {
 
         let actions = this.ecs.get("Game", "game", "actions")
 
-        while(actions.length > 0) {
-            
-            let action = actions.shift()
+        this.timeline = this.scene.tweens.createTimeline();
 
-            actions.forEach(action => {
-                this.animateAction(action)
-            })
+        while(actions.length > 0) {            
+            this.handleAction(actions.shift())
         }        
+
+        this.timeline.play()
     }
 }
 

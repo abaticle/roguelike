@@ -1,14 +1,15 @@
-import Game from "./src/game"
-import GameScene from "./src/scenes/game-scene"
+import BattleScene from "./src/scenes/battle/battle-scene"
+import EndBattleScene from "./src/scenes/end-battle/end-battle-scene"
 
 window.onload = () => {
-    const game = new Game({
+    new Phaser.Game({
         title: "Tests !",
-        width: 800,
-        height: 600,
+        width: window.innerWidth,
+        height: window.innerHeight,
         parent: "game",
         scene: [
-            GameScene
+            BattleScene,
+            EndBattleScene
         ]
     })
 }

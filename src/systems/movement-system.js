@@ -19,7 +19,7 @@ class MovementSystem {
         let enemyId = this.ecsHelper.getProximityEnemyUnit(entityId)
 
         //Attack ?
-        if (enemyId) {                  
+        if (enemyId !== undefined) {                  
             this.messageHelper.createAttackMelee(entityId, enemyId)
         }
 
@@ -77,14 +77,12 @@ class MovementSystem {
         entities.forEach(entityId => {
             const {
                 actor,
-                position, 
                 ai
             } = this.ecs.get(entityId)
 
             if (actor.health <= 0) {
                 return
             } 
-
 
             switch(ai.mode) {
                 case "melee":
@@ -95,11 +93,7 @@ class MovementSystem {
                     this.moveRanged(entityId)    
                     break
             }
-
-
-        });
-
-
+        })
     }
 }
 
