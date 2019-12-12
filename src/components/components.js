@@ -51,23 +51,18 @@ export const ActorComponent = {
 export const DisplayComponent = {
     name: "display",
     sprite: undefined,
-    container: [],
+    container: undefined,
     x: 0,
     y: 0
 }
 
 export const GameComponent = {
-    name: "game",
-    currentSceneId: undefined
-}
-
-export const SceneComponent = {
-    name: "scene",
-    ui: undefined
+    name: "game"
 }
 
 export const BattleComponent = {
-    name: "battleScene",
+    name: "battle",
+    scene: undefined,
     ui: undefined,
     speed: 1,
     turn: 0,
@@ -104,5 +99,6 @@ export const AllComponent = [
     DisplayComponent,
     MapComponent,
     PlayerComponent,
-    BattleSceneComponent
+    GameComponent,
+    BattleComponent
 ]

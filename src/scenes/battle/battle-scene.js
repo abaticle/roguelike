@@ -10,7 +10,7 @@ import PreparePathfindingSystem from "../../systems/prepare-pathfinding"
 import UISystem from "../../systems/ui-system"
 import BattleSceneUI from "./battle-scene-ui"
 import Util from "../../other/utils"
-import DrawSystem from "../../systems/draw-system"
+import DrawBattleSystem from "../../systems/draw-battle-system"
 
 export default class BattleScene extends Phaser.Scene {
 
@@ -20,7 +20,15 @@ export default class BattleScene extends Phaser.Scene {
         })
 
         this.ecs = new ECSHelper()
-        this.systems = {}
+
+        this.systems = {
+            preparePathfinding: new PreparePathfindingSystem(this.ecs),
+            movement: new MovementSystem(this.ecs),
+            animation: new AnimationSystem(this.ecs, this),
+            teamCounter: new TeamCounterSystem(this.ecs),
+            ui: new UISystem(this.ecs),
+            drawBattle: new DrawBattleSystem(this.ecs)
+        }
 
         window.ecs = this.ecs
     }
@@ -39,27 +47,19 @@ export default class BattleScene extends Phaser.Scene {
 
         this.registerComponents()
 
-        //this.createGameEntity()
-        //this.createMapEntity()
-
         this.createSceneEntity()
         this.createPlayer()
         this.createComputer()
-        this.createSystems()
 
-        this.drawMap()
-        this.drawActors()
+        this.systems.drawBattle.update()
 
-
-        this.input.on('pointerdown', (pointer) => {            
-
+        this.input.on('pointerdown', (pointer) => {    
             const entityId = this.ecs.getEntityAtMousePosition(pointer, true)
-
-            const ui = this.ecs.get("BattleScene", "battleScene", "ui")
+            const ui = this.ecs.get("Battle", "battle", "ui")
 
             ui.setEntityId(entityId)
 
-            this.systems.uiSystem.update()
+            this.systems.ui.update()
 
         })
 
@@ -95,29 +95,16 @@ export default class BattleScene extends Phaser.Scene {
 
     }
 
-    createSystems() {
-
-        this.systems = {
-            preparePathfinding: new PreparePathfindingSystem(this.ecs),
-            movement: new MovementSystem(this.ecs),
-            animation: new AnimationSystem(this.ecs, this),
-            teamCounter: new TeamCounterSystem(this.ecs),
-            uiSystem: new UISystem(this.ecs),
-            drawSystem: new DrawSystem(this.ecs)
-        }
-
-    }
-
     turn() {
 
-        let actions = this.ecs.get("BattleScene", "battleScene", "actions")
+        let actions = this.ecs.get("Battle", "battle", "actions")
 
         if (actions.length === 0) {
             this.systems.preparePathfinding.update()
             this.systems.movement.update()
             this.systems.animation.update()
             this.systems.teamCounter.update()
-            this.systems.uiSystem.update()
+            this.systems.ui.update()
         }
 
         this.checkEnd()
@@ -148,50 +135,14 @@ export default class BattleScene extends Phaser.Scene {
         })
     }
 
-    drawMap() {
-        const map = this.ecs.get("BattleScene", "map")
-
-        map.tilemap = this.make.tilemap({
-            data: map.layout,
-            tileWidth: 32,
-            tileHeight: 32
-        });
-
-        const tiles = map.tilemap.addTilesetImage("ground1");
-        const groundLayer = map.tilemap.createStaticLayer(0, tiles, 0, 0);
-    }
-
-    drawActors() {
-        this.ecs.searchEntities(["display", "position", "actor"]).map(entityId => {
-
-            const {
-                display,
-                position
-            } = this.ecs.get(entityId)            
-
-
-            display.sprite = this.make.sprite({
-                key: "monsters1",
-                frame: display.frame,
-                x: (32 * position.x) + 16,
-                y: (32 * position.y) + 16
-            })
-
-//display.sprite = this.add.sprite((32 * position.x) + 16, (32 * position.y) + 16, "monsers1", display.frame)
-            
-            display.container = this.add.container((32 * position.x) + 16, (32 * position.y) + 16, display.sprite)
-
-        })
-    }
-
-
     createSceneEntity() {
 
         let scene = this.ecs.createFromAssemblage({
-            alias: "BattleScene",
-            components: ["battleScene", "map"],
+            alias: "Battle",
+            components: ["battle", "map"],
             data: {
-                battleScene: {
+                battle: {
+                    scene: this,
                     ui: new BattleSceneUI(this, this.ecs)
                 },
                 map: {
@@ -202,7 +153,7 @@ export default class BattleScene extends Phaser.Scene {
             }
         })
 
-        const map = this.ecs.get("BattleScene", "map")
+        const map = this.ecs.get("Battle", "map")
 
         //Update map layout
         for (let i = 0; i < map.height; i++) {
@@ -284,7 +235,7 @@ export default class BattleScene extends Phaser.Scene {
         })
 
         //Add soldier to squad
-        Util.getRectanglePositions(2, 3, 3, 6).forEach(pos => {
+        Util.getRectanglePositions(2, 3, 2, 4).forEach(pos => {
             this.createActorEntity(player, squad, "Soldier", pos.x, pos.y)
         })
     }
@@ -313,7 +264,7 @@ export default class BattleScene extends Phaser.Scene {
         })
 
         //Add soldier to squad
-        Util.getRectanglePositions(10, 3, 11, 6).forEach(pos => {
+        Util.getRectanglePositions(10, 3, 10, 3).forEach(pos => {
             this.createActorEntity(player, squad, "Gobelin", pos.x, pos.y)
         })
     }

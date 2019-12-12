@@ -7,8 +7,7 @@ class ECSHelper extends ECS {
     constructor() {
         super()
     }   
-
-
+    
     /**
      * @returns {MapComponent}
      */
@@ -16,6 +15,11 @@ class ECSHelper extends ECS {
         const entityId = this.searchEntities("map")[0]
 
         return this.get(entityId, "map")
+    }
+
+
+    getCurrentScene() {
+        
     }
 
 

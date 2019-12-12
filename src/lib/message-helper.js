@@ -18,7 +18,7 @@ export default class MessageHelper {
      * @param {MoveMessage|AttackMeleeMessage|AttackRangedMessage} message 
      */
     pushMessage(message) {
-        const actions = this.ecs.get("BattleScene", "battleScene", "actions")
+        const actions = this.ecs.get("Battle", "battle", "actions")
         
         actions.push(message)
     }

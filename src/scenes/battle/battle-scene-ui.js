@@ -13,6 +13,8 @@ export default class BattleSceneUI {
             entityId: undefined,
             health: 0,
             desc: "",
+            x: 0,
+            y: 0,
             actions: [],
             selection: undefined
         }
@@ -44,6 +46,14 @@ export default class BattleSceneUI {
                     m("tr", [
                         m("td", "Health"), 
                         m("td", this.state.health)
+                    ]),
+                    m("tr", [
+                        m("td", "X"), 
+                        m("td", this.state.x)
+                    ]),
+                    m("tr", [
+                        m("td", "Y"), 
+                        m("td", this.state.y)
                     ])
                 ])
             ])
