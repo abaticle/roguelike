@@ -1,22 +1,15 @@
 import ECS from "./ecs"
 import Utils from "./../other/utils"
-import { MapComponent } from "../components/components"
 
-class ECSHelper extends ECS {
-
-    constructor() {
-        super()
-    }   
-
+class ECSHelper {
 
     /**
-     * @returns {MapComponent}
+     * Class to help with ecs engine
+     * @param {ECS} ecs 
      */
-    getCurrentMap() {
-        const entityId = this.searchEntities("map")[0]
-
-        return this.get(entityId, "map")
-    }
+    constructor(ecs) {
+        this.ecs = ecs
+    }   
 
 
     /**
@@ -48,13 +41,15 @@ class ECSHelper extends ECS {
         
         const x = position.x
         const y = position.y 
-        
-        return this.searchEntities(["actor", "position"]).find(entityId => {
+
+        return this.ecs.searchEntities(["actor", "position"]).find(entityId => {
 
             const {
                 position,
                 actor
-            } = this.get(entityId)            
+            } = this.ecs.get(entityId)
+
+            
 
             if (position.x === x && position.y === y) {
                 if (alive && actor.health > 0) {
@@ -82,13 +77,16 @@ class ECSHelper extends ECS {
      */
     findPath(xFrom, yFrom, xTo, yTo) {
         
-        const map = this.getCurrentMap()
+        const {
+            finder,
+            grid
+        } = this.ecs.get("Map", "map")
 
-        map.grid.setWalkableAt(xTo, yTo, true)
+        grid.setWalkableAt(xTo, yTo, true)
         
-        let path = map.finder.findPath(xFrom, yFrom, xTo, yTo, map.grid.clone())
+        let path = finder.findPath(xFrom, yFrom, xTo, yTo, grid.clone())
         
-        map.grid.setWalkableAt(xTo, yTo, false)
+        grid.setWalkableAt(xTo, yTo, false)
 
         return path
     }
@@ -101,9 +99,9 @@ class ECSHelper extends ECS {
      * @param {boolean} walkable Walkable or not
      */
     setWalkable(x, y, walkable) {
-        const map = this.getCurrentMap()
+        const grid = this.ecs.get("Map", "map", "grid")
 
-        map.grid.setWalkableAt(x, y, walkable)
+        grid.setWalkableAt(x, y, walkable)
     }
 
 
@@ -113,9 +111,9 @@ class ECSHelper extends ECS {
      * @param {number} y Y Position
      */
     getWalkable(x, y) {
-        const map = this.getCurrentMap()
+        const grid = this.ecs.get("Map", "map", "grid")
         
-        return map.grid.isWalkableAt(x, y)
+        return grid.isWalkableAt(x, y)
     }
 
     /**
@@ -124,8 +122,8 @@ class ECSHelper extends ECS {
      * @param {number} entityToId 
      */
     getOpositePositionTowardEntity(entityFromId, entityToId) {
-        const positionFrom = this.get(entityFromId, "position")
-        const positionTo = this.get(entityToId, "position")
+        const positionFrom = this.ecs.get(entityFromId, "position")
+        const positionTo = this.ecs.get(entityToId, "position")
 
 
         //Get all position arround entity
@@ -158,8 +156,8 @@ class ECSHelper extends ECS {
      * @param {number} entityToId 
      */
     getNextPositionTowardEntity(entityFromId, entityToId) {
-        const positionFrom = this.get(entityFromId, "position")
-        const positionTo = this.get(entityToId, "position")
+        const positionFrom = this.ecs.get(entityFromId, "position")
+        const positionTo = this.ecs.get(entityToId, "position")
 
         let path = this.findPath(positionFrom.x, positionFrom.y, positionTo.x, positionTo.y)
 
@@ -180,16 +178,16 @@ class ECSHelper extends ECS {
      * Get map width
      * @returns {number} Get map width
      */
-    getCurrentMapWidth() {
-        return this.get(this.getCurrentMap(), "map", "width")
+    getMapWidth() {
+        return this.ecs.get("BattleScene", "map", "width")
     }
 
     /**
      * Get map height
      * @returns {number} Get map height
      */
-    getCurrentMapHeight() {
-        return this.get(this.getCurrentMap(), "map", "height")
+    getMapHeight() {
+        return this.ecs.get("BattleScene", "map", "height")
     }
 
     /**
@@ -198,7 +196,7 @@ class ECSHelper extends ECS {
      * @returns {Position[]} entityId 
      */
     getAroundPositions(entityId) {
-        const position = this.get(entityId, "position")
+        const position = this.ecs.get(entityId, "position")
 
         let positions = []
 
@@ -207,8 +205,8 @@ class ECSHelper extends ECS {
 
                 if (x !== position.x || y !== position.y) {
 
-                    if (x >= 0 && x < this.getCurrentMap().width) {
-                        if (y >= 0 && y < this.getCurrentMap().height) {
+                    if (x >= 0 && x < this.getMapWidth()) {
+                        if (y >= 0 && y < this.getMapHeight()) {
 
                             positions.push({
                                 x,
@@ -229,10 +227,10 @@ class ECSHelper extends ECS {
      * @returns {number[]} Enemy entities
      */
     getEnemies(friendlyEntityId) {
-        const friendlyActor = this.get(friendlyEntityId, "actor")
+        const friendlyActor = this.ecs.get(friendlyEntityId, "actor")
 
-        return this.searchEntities("actor").filter(entityId => {
-            const actor = this.get(entityId, "actor")
+        return this.ecs.searchEntities("actor").filter(entityId => {
+            const actor = this.ecs.get(entityId, "actor")
 
             if (actor.health > 0 && actor.teamId !== friendlyActor.teamId) {
                 return true
@@ -253,12 +251,12 @@ class ECSHelper extends ECS {
      */
     getClosestEnemyUnit(friendlyEntityId, range = 9999) {
 
-        const unitPosition = this.get(friendlyEntityId, "position")
+        const unitPosition = this.ecs.get(friendlyEntityId, "position")
 
         let enemy = -1
 
         this.getEnemies(friendlyEntityId).forEach(enemyEntityId => {
-            const enemyPosition = this.get(enemyEntityId, "position")
+            const enemyPosition = this.ecs.get(enemyEntityId, "position")
 
             let newDistance = Utils.distance(unitPosition.x, unitPosition.y, enemyPosition.x, enemyPosition.y)
 
@@ -284,8 +282,8 @@ class ECSHelper extends ECS {
      * @returns {number} Distance 
      */
     getDistanceBetweenEntities(entityFrom, entityTo) {
-        const entityFromPosition = this.get(entityFrom, "position")
-        const entityToPosition = this.get(entityTo, "position")
+        const entityFromPosition = this.ecs.get(entityFrom, "position")
+        const entityToPosition = this.ecs.get(entityTo, "position")
 
         return Utils.distance(entityFromPosition.x, entityFromPosition.y, entityToPosition.x, entityToPosition.y)
     }
@@ -319,8 +317,8 @@ class ECSHelper extends ECS {
 
         let result = enemyActors.filter(enemyEntityId => {
             
-            const ownPosition = this.get(friendlyEntityId, "position")
-            const enemyPosition = this.get(enemyEntityId, "position")
+            const ownPosition = this.ecs.get(friendlyEntityId, "position")
+            const enemyPosition = this.ecs.get(enemyEntityId, "position")
 
             const found = friendlyPossiblePositions.find(position => {
                 if (position.x === enemyPosition.x && position.y === enemyPosition.y) {

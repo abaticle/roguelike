@@ -18,7 +18,10 @@ class PreparePathfindingSystem {
 
 
         //Set entities positions as not walkables
-        const actors = this.ecs.searchEntities(["position", "actor"])
+        const actors = this.ecs.searchEntities([            
+            "position", 
+            "actor"
+        ])
 
         actors.forEach(entityId => {
             const position = this.ecs.get(entityId, "position")

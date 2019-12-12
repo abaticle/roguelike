@@ -1,4 +1,5 @@
 import Phaser from "phaser"
+import ECS from "../../lib/ecs"
 import ECSHelper from "../../lib/ecs-helper"
 import MovementSystem from "../../systems/movement-system"
 import AnimationSystem from "../../systems/animation-system"
@@ -19,8 +20,10 @@ export default class BattleScene extends Phaser.Scene {
             key: "BattleScene"
         })
 
-        this.ecs = new ECSHelper()
+        this.ecs = new ECS()
+        this.ecsHelper = new ECSHelper(this.ecs)
         this.systems = {}
+        this.working = false
 
         window.ecs = this.ecs
     }
@@ -53,7 +56,7 @@ export default class BattleScene extends Phaser.Scene {
 
         this.input.on('pointerdown', (pointer) => {            
 
-            const entityId = this.ecs.getEntityAtMousePosition(pointer, true)
+            const entityId = this.ecsHelper.getEntityAtMousePosition(pointer, true)
 
             const ui = this.ecs.get("BattleScene", "battleScene", "ui")
 

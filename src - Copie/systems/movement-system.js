@@ -10,12 +10,13 @@ class MovementSystem {
      */
     constructor(ecs) {
         this.ecs = ecs
+        this.ecsHelper = new ECSHelper(ecs)
         this.messageHelper = new MessageHelper(ecs)
     }
 
     moveMelee(entityId) {
         
-        let enemyId = this.ecs.getProximityEnemyUnit(entityId)
+        let enemyId = this.ecsHelper.getProximityEnemyUnit(entityId)
 
         //Attack ?
         if (enemyId !== undefined) {                  
@@ -24,10 +25,10 @@ class MovementSystem {
 
         //Else move toward enemy
         else {            
-            enemyId = this.ecs.getClosestEnemyUnit(entityId)
+            enemyId = this.ecsHelper.getClosestEnemyUnit(entityId)
 
             if (enemyId) {
-                const targetPosition = this.ecs.getNextPositionTowardEntity(entityId, enemyId)
+                const targetPosition = this.ecsHelper.getNextPositionTowardEntity(entityId, enemyId)
 
                 if (targetPosition) {                
                     this.messageHelper.createMoveMessage(entityId, targetPosition)                
@@ -38,15 +39,15 @@ class MovementSystem {
 
     moveRanged(entityId) {
         
-        let enemyId = this.ecs.getClosestEnemyUnit(entityId)
+        let enemyId = this.ecsHelper.getClosestEnemyUnit(entityId)
 
-        let distance = this.ecs.getDistanceBetweenEntities(entityId, enemyId)
+        let distance = this.ecsHelper.getDistanceBetweenEntities(entityId, enemyId)
 
         let targetPosition
 
         //Flee ?
         if (distance < 4) {
-            targetPosition = this.ecs.getOpositePositionTowardEntity(entityId, enemyId)
+            targetPosition = this.ecsHelper.getOpositePositionTowardEntity(entityId, enemyId)
 
             if (targetPosition) {
                 this.messageHelper.createMoveMessage(entityId, targetPosition)  
@@ -55,7 +56,7 @@ class MovementSystem {
 
         //Move toward entity
         else if (distance > 10) {
-            targetPosition = this.ecs.getNextPositionTowardEntity(entityId, enemyId)
+            targetPosition = this.ecsHelper.getNextPositionTowardEntity(entityId, enemyId)
 
             if (targetPosition) {                
                 this.messageHelper.createMoveMessage(entityId, targetPosition)                
@@ -70,7 +71,7 @@ class MovementSystem {
 
     }
 
-    update() {
+    update(time) {
         let entities = this.ecs.searchEntities(["actor", "position", "ai"])
 
         entities.forEach(entityId => {
