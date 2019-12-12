@@ -22,7 +22,6 @@ export default class BattleScene extends Phaser.Scene {
         this.ecs = new ECS()
         this.ecsHelper = new ECSHelper(this.ecs)
         this.systems = {}
-        this.working = false
 
         window.ecs = this.ecs
     }
