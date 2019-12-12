@@ -1,12 +1,3 @@
-import PF from "pathfinding"
-
-/**
- * @typedef {object} ActorComponent Player component
- * @property {string} name Component name
- * @property {string} desc Player description
- * @property {boolean} controled Controled by user ?
- * @property {number} count Number of units
- */
 export const PlayerComponent = {
     name: "player",
     desc: "",
@@ -56,17 +47,7 @@ export const DisplayComponent = {
     y: 0
 }
 
-export const GameComponent = {
-    name: "game",
-    currentSceneId: undefined
-}
-
-export const SceneComponent = {
-    name: "scene",
-    ui: undefined
-}
-
-export const BattleComponent = {
+export const BattleSceneComponent = {
     name: "battleScene",
     ui: undefined,
     speed: 1,
@@ -77,15 +58,6 @@ export const BattleComponent = {
     mapHeigth: 0
 }
 
-/**
- * @typedef {object} MapComponent Map component
- * @property {number} width Map width
- * @property {number} height Map height
- * @property {number[]} layout Map layout
- * @property {Phaser.Tilemaps.Tilemap} tilemap Phaser tilemap
- * @property {PF.Grid} grid PathFinding Grid
- * @property {} finder 
- */
 export const MapComponent = {
     name: "map",
     width: 0,

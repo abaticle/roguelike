@@ -6,10 +6,11 @@ export default class MessageHelper {
     
     /**
      * 
-     * @param {ECSHelper} ecs 
+     * @param {ECS} ecs 
      */
     constructor(ecs) {
         this.ecs = ecs
+        this.ecsHelper = new ECSHelper(ecs)
     }
 
     
@@ -38,7 +39,7 @@ export default class MessageHelper {
 
         const description = `Entity ${entityId} move from [${position.x},${position.y}] to [${nextPosition.x},${nextPosition.y}]`
 
-        this.ecs.setWalkable(position.x, position.y, true)
+        this.ecsHelper.setWalkable(position.x, position.y, true)
 
         position.x = nextPosition.x
         position.y = nextPosition.y
@@ -53,7 +54,7 @@ export default class MessageHelper {
             }
         })
 
-        this.ecs.setWalkable(position.x, position.y, false)
+        this.ecsHelper.setWalkable(position.x, position.y, false)
 
 
         this.pushMessage({
