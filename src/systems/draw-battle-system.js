@@ -8,6 +8,7 @@ export default class DrawBattleSystem {
      */
     constructor(ecs) {
         this.ecs = ecs
+        this.drawn = false
     }
 
 
@@ -45,16 +46,19 @@ export default class DrawBattleSystem {
             const scene = this.getScene()
 
             display.sprite = scene.add.sprite(0, 0, "monsters1", display.frame)
-
             display.container = scene.add.container((32 * position.x) + 16, (32 * position.y) + 16)
-
             display.container.add(display.sprite)
 
         })
     }
 
     update() {
-        this.drawMap()
-        this.drawActors()
+        if (!this.drawn) {
+            this.drawMap()
+            this.drawActors()
+            
+            this.drawn = true
+        }
+        
     }
 }

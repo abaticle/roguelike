@@ -1,3 +1,5 @@
+import ECS from "../../lib/ecs";
+
 export default class BattleSceneUI {
 
     /**
@@ -11,12 +13,17 @@ export default class BattleSceneUI {
 
         this.state = {
             entityId: undefined,
+            squadId: undefined,
             health: 0,
             desc: "",
             x: 0,
             y: 0,
             actions: [],
-            selection: undefined
+            selection: undefined,
+            squadDesc: "",
+            squadNumber: 0,
+            selectionUnit: undefined,
+            selectionSquad: []
         }
 
         m.mount(document.getElementById("ui"), this)
@@ -25,16 +32,30 @@ export default class BattleSceneUI {
 
     setEntityId(entityId) {
         this.state.entityId = entityId
+        this.updateUnit()
     }
 
     view() {        
         return m(".right-panel", [
             m("button", {
-                onclick: () => {
-                    this.scene.turn()
-                }
+                onclick: () => { this.onNewTurnClick() }
             }, "Next turn"),
             
+            m("div", [
+                m("table.pure-table", {
+                    class: this.state.entityId === undefined ? "hidden" : ""
+                }, [
+                    m("tr", [
+                        m("td", "Squad"), 
+                        m("td", this.state.squadDesc)
+                    ]),
+                    m("tr", [
+                        m("td", "Number"), 
+                        m("td", this.state.squadNumber)
+                    ])
+                ])
+            ]),
+
             m("div", [
                 m("table.pure-table", {
                     class: this.state.entityId === undefined ? "hidden" : ""
@@ -68,27 +89,74 @@ export default class BattleSceneUI {
         ]) 
     }
 
+    onNewTurnClick() {
+        this.ecs.set(true, "Battle", "battle", "newTurn")
+    }
+
     update() {
         this.updateUnit()
     }
 
-    updateUnit() {
 
-        if (this.state.selection) {
-            this.state.selection.destroy()
+    removeSelections() {
+        if (this.state.selectionUnit) {
+            this.state.selectionUnit.destroy()
         }
 
-        if (this.state.entityId !== undefined) {
+        if (this.state.selectionSquad.length > 0) {
+            this.state.selectionSquad.forEach(selection => selection.destroy())
+        }
+    }
+
+    updateUnit() {
+
+        const state = this.state
+
+        this.removeSelections()
+
+        if (state.entityId !== undefined) {
 
             const {
                 actor,
-                position
-            } = this.ecs.get(this.state.entityId)
-   
-            this.state.health = actor.health
-            this.state.desc = actor.desc
+                display
+            } = this.ecs.get(state.entityId)
+            
 
-            this.state.selection = this.scene.add.rectangle((position.x * 32) + 16, (position.y * 32) + 16, 32, 32).setStrokeStyle(2, 0xffff00)            
+            //Unit infos
+            state.health = actor.health
+            state.desc = actor.desc
+            state.squadId = actor.squadId    
+            
+            //Unit selection
+            state.selectionUnit = this.scene.add.rectangle(0,0,32,32).setStrokeStyle(2, 0xffff00)               
+            display.container.add(state.selectionUnit)
+
+
+            //Squad infos :
+            const squad = this.ecs.get(actor.squadId)
+
+            state.squadDesc = this.ecs.get(actor.squadId, "squad", "desc")
+            state.squadNumber = this.ecs.get(actor.squadId, "squad", "number")
+
+            this.ecs.searchEntities("actor").forEach(entityId => {
+
+                if (entityId !== state.entityId) {
+                    
+                    const entity = this.ecs.get(entityId)
+
+                    const actor = this.ecs.get(entityId, "actor")
+
+                    if (actor.squadId === state.squadId) {
+                        let rectangle = this.scene.add.rectangle(0,0,32,32).setStrokeStyle(.5   , 0xfff000)
+
+                        entity.display.container.add(rectangle)
+                        this.state.selectionSquad.push(rectangle)
+                    }
+                }
+                
+                
+            });
+            
         }
 
         m.redraw()  

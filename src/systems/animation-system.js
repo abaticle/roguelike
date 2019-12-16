@@ -2,25 +2,20 @@ import ECS from "./../lib/ecs"
 import Utils from "./../other/utils"
 import config from "../config"
 
-
-const TILE_SIZE = 32
-const TILE_MIDLE_SIZE = 16
-const MOVE_DURATION = 50
-const RANGED_ATTACK_DURATION = 40
-const MELEE_ATTACK_DURATION = 40
-const DIE_DURATION = 30
-
 class AnimationSystem {
 
     /**
      * Class constructor
      * @param {ECS} ecs 
      */
-    constructor(ecs, scene) {
+    constructor(ecs) {
         this.ecs = ecs
-        this.scene = scene
         this.timeline = undefined
     }
+
+    getScene() {
+        return this.ecs.get("Battle", "battle", "scene")
+    }    
 
     /**
      * Remove first message
@@ -89,7 +84,7 @@ class AnimationSystem {
         const fromPosition = this.ecs.get(message.from, "position")
         const toPosition = this.ecs.get(message.to, "position")
 
-        const arrowSprite = this.scene.make.sprite({
+        const arrowSprite = this.getScene().make.sprite({
             x: (fromPosition.x * 32) + 16,
             y: (fromPosition.y * 32) + 16,
             key: "arrow1"
@@ -160,7 +155,11 @@ class AnimationSystem {
 
         let actions = this.ecs.get("Battle", "battle", "actions")
 
-        this.timeline = this.scene.tweens.createTimeline();
+        this.timeline = this.getScene().tweens.createTimeline({
+            onComplete: () => {
+                console.log("end")
+            }
+        });
 
         while(actions.length > 0) {            
             this.handleAction(actions.shift())

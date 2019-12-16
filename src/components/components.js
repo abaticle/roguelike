@@ -14,11 +14,6 @@ export const PlayerComponent = {
     count: 0
 }
 
-export const AiComponent = {
-    name: "ai",
-    mode: "melee" //melee/ranged
-}
-
 export const PositionComponent = {
     name: "position",
     x: 0,
@@ -28,7 +23,9 @@ export const PositionComponent = {
 export const SquadComponent = {
     name: "squad",
     desc: "",
-    teamId: undefined
+    number: 1,
+    teamId: undefined,
+    ai: "melee"
 }
 
 /**
@@ -43,6 +40,7 @@ export const ActorComponent = {
     name: "actor",
     desc: "Actor description", 
     health: 20,
+    maxHealth: 20,
     teamId: undefined,
     squadId: undefined
 } 
@@ -53,7 +51,8 @@ export const DisplayComponent = {
     sprite: undefined,
     container: undefined,
     x: 0,
-    y: 0
+    y: 0,
+    selectorVisible: false
 }
 
 export const GameComponent = {
@@ -62,14 +61,18 @@ export const GameComponent = {
 
 export const BattleComponent = {
     name: "battle",
+    newTurn: false,
     scene: undefined,
     ui: undefined,
     speed: 1,
     turn: 0,
-    actions: [],
+    actions: []
+}
+
+export const PrepareBattleComponent = {
+    name: "prepareBattle",
     scene: undefined,
-    mapWidth: 0,
-    mapHeigth: 0
+    ui: undefined
 }
 
 /**
@@ -91,8 +94,9 @@ export const MapComponent = {
     finder: undefined
 }
 
-export const AllComponent = [
-    AiComponent,
+
+
+const Components = [
     PositionComponent,
     ActorComponent,
     SquadComponent,
@@ -100,5 +104,8 @@ export const AllComponent = [
     MapComponent,
     PlayerComponent,
     GameComponent,
-    BattleComponent
+    BattleComponent,
+    PrepareBattleComponent
 ]
+
+export default Components

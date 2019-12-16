@@ -1,4 +1,3 @@
-import ECS from "./../lib/ecs"
 import ECSHelper from "../lib/ecs-helper"
 import MessageHelper from "../lib/message-helper"
 
@@ -6,7 +5,7 @@ class MovementSystem {
 
     /**
      * 
-     * @param {ECS} ecs 
+     * @param {ECSHelper} ecs 
      */
     constructor(ecs) {
         this.ecs = ecs
@@ -71,19 +70,18 @@ class MovementSystem {
     }
 
     update() {
-        let entities = this.ecs.searchEntities(["actor", "position", "ai"])
+        let entities = this.ecs.searchEntities(["actor"])
 
         entities.forEach(entityId => {
-            const {
-                actor,
-                ai
-            } = this.ecs.get(entityId)
+            const actor = this.ecs.get(entityId, "actor")
 
             if (actor.health <= 0) {
                 return
             } 
 
-            switch(ai.mode) {
+            const squad = this.ecs.get(actor.squadId, "squad")
+
+            switch(squad.ai) {
                 case "melee":
                     this.moveMelee(entityId)
                     break
