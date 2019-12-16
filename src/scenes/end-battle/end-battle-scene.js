@@ -1,8 +1,11 @@
 export default class EndBattleScene extends Phaser.Scene {
-    constructor() {
+    constructor(ecs, systems) {
         super({
-            key: "EndBattleScene"
+            key: "EndBattle"
         })
+
+        this.ecs = ecs
+        this.systems = systems
     }
 
     init(data) {

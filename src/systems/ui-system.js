@@ -11,7 +11,7 @@ class UISystem {
     }
 
     update() {
-        let ui = this.ecs.get("BattleScene", "battleScene", "ui")            
+        let ui = this.ecs.get("Battle", "battle", "ui")            
         
         ui.update()        
     }

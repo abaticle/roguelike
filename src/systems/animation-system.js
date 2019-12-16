@@ -1,12 +1,6 @@
 import ECS from "./../lib/ecs"
 import Utils from "./../other/utils"
-
-const TILE_SIZE = 32
-const TILE_MIDLE_SIZE = 16
-const MOVE_DURATION = 50
-const RANGED_ATTACK_DURATION = 40
-const MELEE_ATTACK_DURATION = 40
-const DIE_DURATION = 30
+import config from "../config"
 
 class AnimationSystem {
 
@@ -14,17 +8,20 @@ class AnimationSystem {
      * Class constructor
      * @param {ECS} ecs 
      */
-    constructor(ecs, scene) {
+    constructor(ecs) {
         this.ecs = ecs
-        this.scene = scene
         this.timeline = undefined
     }
+
+    getScene() {
+        return this.ecs.get("Battle", "battle", "scene")
+    }    
 
     /**
      * Remove first message
      */
     shiftMessage() {
-        const actions = this.ecs.get("BattleScene", "battleScene", "actions")
+        const actions = this.ecs.get("Battle", "battle", "actions")
 
         actions.shift()
     }
@@ -41,11 +38,11 @@ class AnimationSystem {
         } = this.ecs.get(message.entityId)        
 
         this.timeline.add({
-            targets: display.sprite,
-            x: (TILE_SIZE * position.x) + TILE_MIDLE_SIZE,
-            y: (TILE_SIZE * position.y) + TILE_MIDLE_SIZE,
+            targets: display.container,
+            x: (config.TILE_SIZE * position.x) + config.TILE_MIDLE_SIZE,
+            y: (config.TILE_SIZE * position.y) + config.TILE_MIDLE_SIZE,
             ease: 'Power1',
-            duration: MOVE_DURATION,
+            duration: config.MOVE_DURATION,
             onStart: () => {},
             onComplete: () => {}
         });
@@ -68,10 +65,10 @@ class AnimationSystem {
         const targetPosition = Utils.getPositionBetweenTwoPoints(position.x, position.y, toPosition.x, toPosition.y)
 
         this.timeline.add({
-            targets: display.sprite,
-            x: (TILE_SIZE * targetPosition.x) + TILE_MIDLE_SIZE,
-            y: (TILE_SIZE * targetPosition.y) + TILE_MIDLE_SIZE,
-            duration: MELEE_ATTACK_DURATION,
+            targets: display.container,
+            x: (config.TILE_SIZE * targetPosition.x) + config.TILE_MIDLE_SIZE,
+            y: (config.TILE_SIZE * targetPosition.y) + config.TILE_MIDLE_SIZE,
+            duration: config.MELEE_ATTACK_DURATION,
             yoyo: true
         })
 
@@ -79,7 +76,7 @@ class AnimationSystem {
 
 
     /**
-     *  Animate ranged attack
+     * Animate ranged attack
      * @param {{type: string, from: number, to: number, damages: number}} message Animation message
      */
     animateRanged(message) {
@@ -87,21 +84,21 @@ class AnimationSystem {
         const fromPosition = this.ecs.get(message.from, "position")
         const toPosition = this.ecs.get(message.to, "position")
 
-        const sprite = this.scene.make.sprite({
+        const arrowSprite = this.getScene().make.sprite({
             x: (fromPosition.x * 32) + 16,
             y: (fromPosition.y * 32) + 16,
             key: "arrow1"
         })
 
         this.timeline.add({
-            targets: sprite,
+            targets: arrowSprite,
             x: (32 * toPosition.x) + 16,
             y: (32 * toPosition.y) + 16,
             ease: 'Power1',
-            duration: RANGED_ATTACK_DURATION,
+            duration: config.RANGED_ATTACK_DURATION,
             onStart: () => {},
             onComplete: () => {
-                sprite.destroy()
+                arrowSprite.destroy()
             }
         });
 
@@ -110,6 +107,7 @@ class AnimationSystem {
     }
 
     /**
+     * Animate die
      * @param {action.entityId} action Dieing entity
      * @param {{type: string, entityId: number, killedBy: number, damages: number}} message Die message
      */    
@@ -122,13 +120,13 @@ class AnimationSystem {
         //display.sprite.destroy()
 
         this.timeline.add({
-            targets: display.sprite,
+            targets: display.container,
             ease: 'Power1',
-            duration: DIE_DURATION,
+            duration: config.DIE_DURATION,
             alpha: 0,
             onStart: () => {},
             onComplete: () => {
-                display.sprite.destroy()
+                display.container.destroy()
             }
         });
     }
@@ -155,9 +153,13 @@ class AnimationSystem {
 
     update() {
 
-        let actions = this.ecs.get("BattleScene", "battleScene", "actions")
+        let actions = this.ecs.get("Battle", "battle", "actions")
 
-        this.timeline = this.scene.tweens.createTimeline();
+        this.timeline = this.getScene().tweens.createTimeline({
+            onComplete: () => {
+                console.log("end")
+            }
+        });
 
         while(actions.length > 0) {            
             this.handleAction(actions.shift())

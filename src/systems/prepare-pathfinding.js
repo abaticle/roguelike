@@ -8,7 +8,7 @@ class PreparePathfindingSystem {
     update() {
 
         //Initiate pathfinding grid
-        const map = this.ecs.get("BattleScene", "map")
+        const map = this.ecs.get("Battle", "map")
 
         map.grid = new PF.Grid(map.width, map.height)
 

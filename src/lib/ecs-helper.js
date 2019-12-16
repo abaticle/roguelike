@@ -1,14 +1,14 @@
 import ECS from "./ecs"
 import Utils from "./../other/utils"
 import { MapComponent } from "../components/components"
+import Config from "../config"
 
 class ECSHelper extends ECS {
 
     constructor() {
         super()
     }   
-
-
+    
     /**
      * @returns {MapComponent}
      */
@@ -16,6 +16,46 @@ class ECSHelper extends ECS {
         const entityId = this.searchEntities("map")[0]
 
         return this.get(entityId, "map")
+    }
+
+
+    getCurrentScene() {
+        
+    }
+
+
+    /**
+     * Draw a map in a scene
+     * @param {Phaser.Scene} scene 
+     * @param {MapComponent} map 
+     */
+    drawMap(scene, map) {
+
+        map.tilemap = scene.make.tilemap({
+            data: map.layout,
+            tileWidth: 32,
+            tileHeight: 32
+        });        
+        
+        const tiles = map.tilemap.addTilesetImage("ground1");
+        
+        map.tilemap.createStaticLayer(0, tiles, 0, 0);
+    }
+
+
+    /**
+     * Get world position from mouse
+     * @param {Object} position Mouse position
+     * @param {number} position.x Mouse x position
+     * @param {number} position.y Mouse y position
+     */
+    getWorldPositionFromMousePosition(position) {
+        const pos = {
+            x: parseInt(position.x / Config.TILE_SIZE),
+            y: parseInt(position.y / Config.TILE_SIZE) 
+        }
+
+        return pos
     }
 
 
@@ -27,10 +67,7 @@ class ECSHelper extends ECS {
      * @param {boolean} alive 
      */
     getEntityAtMousePosition(position, alive = true) {
-        const pos = {
-            x: parseInt(position.x / 32),
-            y: parseInt(position.y / 32) 
-        }
+        const pos = this.getWorldPositionFromMousePosition(position)
 
         return this.getEntityAtPosition(pos, alive)
     }
