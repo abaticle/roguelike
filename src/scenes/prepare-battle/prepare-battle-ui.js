@@ -9,6 +9,7 @@ export default class PrepareBattleUI {
         this.ecs = ecs
         this.scene = scene
 
+        this.placingSquadId = undefined
         this.squads = []
 
     }
@@ -30,8 +31,10 @@ export default class PrepareBattleUI {
                     m("span", squad.desc),
                     m("br"),
                     m("button.pure-button", {
-                        onclic: () => {
-
+                        class: this.placingSquadId !== undefined ? "pure-button-disabled" : "",
+                        onclick: () => {
+                            squad.placing = true
+                            this.placingSquadId = squad.squadId
                         }
                     }, "Place")
                 ])

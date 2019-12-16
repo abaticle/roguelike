@@ -85,6 +85,10 @@ export default class PreloadScene extends Phaser.Scene {
         entityFactory.createActor(player, squad2, "Soldier")
         entityFactory.createActor(player, squad2, "Soldier")
         entityFactory.createActor(player, squad2, "Soldier")
+        entityFactory.createActor(player, squad2, "Soldier")
+        entityFactory.createActor(player, squad2, "Soldier")
+        entityFactory.createActor(player, squad2, "Soldier")
+        entityFactory.createActor(player, squad2, "Soldier")
     }
 
     start() {

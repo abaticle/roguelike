@@ -13,6 +13,28 @@ export default class Utils {
     }
 
 
+    /**
+     * 
+     * @param {object} center 
+     * @param {number} center.x 
+     * @param {number} center.y 
+     * @param {object} pos 
+     * @param {number} pos.x 
+     * @param {number} pos.y 
+     * @param {number} angle 
+     */
+    static rotate(center, pos, angle) {
+        let radians = (Math.PI / 180) * angle;
+        let cos = Math.cos(radians);
+        let sin = Math.sin(radians);
+        let nx = (cos * (pos.x - center.x)) + (sin * (pos.y - center.y)) + center.x;
+        let ny = (cos * (pos.y - center.y)) - (sin * (pos.x - center.x)) + center.y;
+
+        return {
+            x: nx,
+            y: ny
+        }
+    }
 
     /**
      * 
