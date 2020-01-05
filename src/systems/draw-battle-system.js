@@ -38,7 +38,6 @@ export default class DrawBattleSystem {
         this.ecs.searchEntities(["display", "position", "actor"]).map(entityId => {
 
             const {
-                actor,
                 display,
                 position
             } = this.ecs.get(entityId)            
@@ -54,7 +53,6 @@ export default class DrawBattleSystem {
 
     update() {
         if (!this.drawn) {
-            this.drawMap()
             this.drawActors()
             
             this.drawn = true

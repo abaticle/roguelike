@@ -1,6 +1,76 @@
 import ECS from "../../lib/ecs";
 
-export default class BattleSceneUI {
+
+const data = {
+    selectedUnit: {
+        entityId: undefined,
+        health: 0,
+        desc: "",
+        x: 0,
+        y: 0,
+    },
+        
+    selectedSquad: {
+        entityId: undefined,
+        desc: "",
+        number: undefined
+    }    
+}
+
+const BattleSceneUI = {
+
+    onNewTurnClick: () => {
+
+    },
+
+    setSelectedUnit: () => {
+
+    },
+
+
+    setSelectedSquad: () => {
+
+    },
+
+    view: () => {
+
+        return m(".right-panel", [
+            m("button", {
+                onclick: () => BattleSceneUI.onNewTurnClick() 
+            }, "Next turn"),
+            
+            m("div", [
+                m("table.pure-table", {
+                    class: data.selectedSquad.entityId === undefined ? "hidden" : ""
+                }, [
+                    m("tr", [
+                        m("td", "Squad"), 
+                        m("td", data.selectedSquad.desc)
+                    ])
+                ])
+            ]),
+
+            m("div", [
+                m("table.pure-table", {
+                    class: data.selectedUnit.entityId === undefined ? "hidden" : ""
+                }, [
+                    m("tr", [
+                        m("td", "Unit"), 
+                        m("td", data.selectedUnit.desc)
+                    ])
+                ])
+            ])
+        ]) 
+    }
+
+}
+
+export default BattleSceneUI
+
+
+
+
+class BattleSceneUIOld {
 
     /**
      * 
@@ -36,57 +106,7 @@ export default class BattleSceneUI {
     }
 
     view() {        
-        return m(".right-panel", [
-            m("button", {
-                onclick: () => { this.onNewTurnClick() }
-            }, "Next turn"),
-            
-            m("div", [
-                m("table.pure-table", {
-                    class: this.state.entityId === undefined ? "hidden" : ""
-                }, [
-                    m("tr", [
-                        m("td", "Squad"), 
-                        m("td", this.state.squadDesc)
-                    ]),
-                    m("tr", [
-                        m("td", "Number"), 
-                        m("td", this.state.squadNumber)
-                    ])
-                ])
-            ]),
-
-            m("div", [
-                m("table.pure-table", {
-                    class: this.state.entityId === undefined ? "hidden" : ""
-                }, [
-                    m("tr", [
-                        m("td", "Unit"), 
-                        m("td", this.state.desc)
-                    ]),
-                    m("tr", [
-                        m("td", "Health"), 
-                        m("td", this.state.health)
-                    ]),
-                    m("tr", [
-                        m("td", "X"), 
-                        m("td", this.state.x)
-                    ]),
-                    m("tr", [
-                        m("td", "Y"), 
-                        m("td", this.state.y)
-                    ])
-                ])
-            ])
-            /*m("button", {
-                onclick: () => {
-                    this.scene.step()
-                }
-            }, "Step"),
-            m("ul", this.actions.map(action => {
-                return m("li", action.description)
-            }))*/
-        ]) 
+        
     }
 
     onNewTurnClick() {

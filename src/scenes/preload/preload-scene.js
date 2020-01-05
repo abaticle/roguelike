@@ -1,9 +1,10 @@
 import ECS from "./../../lib/ecs-helper"
 import EntityFactory from "../../factories/entity-factory"
+import Utils from "../../other/utils"
 
 export default class PreloadScene extends Phaser.Scene {
     /**
-     * 
+     * Class constructor
      * @param {ECS} ecs 
      * @param {*} systems 
      */
@@ -16,6 +17,10 @@ export default class PreloadScene extends Phaser.Scene {
         this.systems = systems
     }
 
+
+    /**
+     * Preload assets
+     */
     preload() {
         this.load.image("arrow1", "assets/arrpw.png")
         this.load.image("ground1", "assets/dg_grounds32.gif")
@@ -25,18 +30,82 @@ export default class PreloadScene extends Phaser.Scene {
         })
     }
 
+
+    /**
+     * Create : 
+     * - map
+     * - player
+     * - computer
+     * And play battle
+     */
     create() {
+        this.createMap()
         this.createPlayer()
-        this.createEnemy()
+        this.createComputer()
         this.start()
     }
 
+    /**
+     * Create map
+     */
+    createMap() {
+        this.ecs.createFromAssemblage({
+            alias: "Map",
+            components: ["map"],
+            data: {
+                map: {
+                    width: 120,
+                    height: 50,
+                    layout: []
+                }
+            }
+        })        
 
-    createEnemy() {
-       
+        const map = this.ecs.get("Map", "map")
+
+        map.layout = Utils.getRandomMapLayout(map.width, map.height)
     }
 
+    /**
+     * Create computer
+     */
+    createComputer() {
+        let computer = this.ecs.createFromAssemblage({
+            alias: "Computer",
+            components: ["player"],
+            data: {
+                player: {
+                    desc: "Computer"
+                }
+            }
+        })
 
+        let squad = this.ecs.createFromAssemblage({
+            components: ["squad"],
+            data: {
+                squad: {
+                    desc: "Squad 1",
+                    number: 1,
+                    teamId: computer,
+                    ai: "melee",
+                    placed: true
+                }
+            }
+        })     
+
+
+        const entityFactory = new EntityFactory(this.ecs)
+        
+        Utils.getRectanglePositions(20, 5, 22, 10).forEach(pos => {            
+
+            entityFactory.createActor(computer, squad, "Gobelin", pos.x, pos.y)
+            
+        });
+    }
+
+    /**
+     * Create player
+     */
     createPlayer() {
 
         //Create player 
@@ -58,7 +127,8 @@ export default class PreloadScene extends Phaser.Scene {
                     desc: "Squad 1",
                     number: 1,
                     teamId: player,
-                    ai: "melee"
+                    ai: "melee",
+                    placed: false
                 }
             }
         })
@@ -81,16 +151,25 @@ export default class PreloadScene extends Phaser.Scene {
         entityFactory.createActor(player, squad, "Soldier")
         entityFactory.createActor(player, squad, "Soldier")
         entityFactory.createActor(player, squad, "Soldier")
-        entityFactory.createActor(player, squad2, "Soldier")
-        entityFactory.createActor(player, squad2, "Soldier")
-        entityFactory.createActor(player, squad2, "Soldier")
-        entityFactory.createActor(player, squad2, "Soldier")
-        entityFactory.createActor(player, squad2, "Soldier")
-        entityFactory.createActor(player, squad2, "Soldier")
-        entityFactory.createActor(player, squad2, "Soldier")
-        entityFactory.createActor(player, squad2, "Soldier")
+        entityFactory.createActor(player, squad, "Soldier")
+        entityFactory.createActor(player, squad, "Soldier")
+        entityFactory.createActor(player, squad, "Soldier")
+        entityFactory.createActor(player, squad, "Soldier")
+        entityFactory.createActor(player, squad, "Soldier")
+        entityFactory.createActor(player, squad, "Soldier")
+        entityFactory.createActor(player, squad2, "Archer")
+        entityFactory.createActor(player, squad2, "Archer")
+        entityFactory.createActor(player, squad2, "Archer")
+        entityFactory.createActor(player, squad2, "Archer")
+        entityFactory.createActor(player, squad2, "Archer")
+        entityFactory.createActor(player, squad2, "Archer")
+        entityFactory.createActor(player, squad2, "Archer")
+        entityFactory.createActor(player, squad2, "Archer")
     }
 
+    /**
+     * Start and launch PrepareBattle scene
+     */
     start() {
         this.scene.start("PrepareBattle")
     }

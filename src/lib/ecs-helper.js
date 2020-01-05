@@ -19,7 +19,30 @@ class ECSHelper extends ECS {
     }
 
 
-    getCurrentScene() {
+
+    drawActors(scene) {
+
+        this.searchEntities("actor")
+
+    }
+
+
+    drawEntity(scene, entityId) {
+    
+        const {
+            display,
+            position
+        } = this.get(entityId)
+
+        let pixelPosition = Utils.convertToPixelPosition(position)
+
+        display.x = pixelPosition.x
+        display.y = pixelPosition.y
+
+        display.sprite = scene.add.sprite(0, 0, "monsters1", display.frame)
+        
+        display.container = scene.add.container(display.x, display.y)
+        display.container.add(display.sprite)     
         
     }
 
@@ -44,12 +67,69 @@ class ECSHelper extends ECS {
 
 
     /**
+     * Get formation positions
+     * @param {position} from From
+     * @param {position} to To
+     * @param {position} size Number of units to place
+     * @returns {position[]} Positions
+     */
+    getFormationPositions(from, to, size) {
+
+        let positions = Utils.getLinePositions(from, to)
+
+        //Only one position
+        if (positions.length <= 1) {
+            return positions
+        }
+
+        //One line is enough
+        if (positions.length >= size) {
+            positions.splice(size)
+            return positions
+        }
+
+        //Else add lines unless ennough positions
+        let filled = false
+        let lineCount = 0
+        let lineLength = positions.length
+
+        while (filled === false) {
+
+            const firstPos = lineCount * lineLength
+            const lastPos = (lineCount * lineLength) + (lineLength - 1)
+            
+            let angle = Utils.getAngle(positions[firstPos], positions[firstPos + 1])
+
+            const lineFrom = Utils.getNextPositionFromAngle(positions[firstPos], angle)            
+            const lineTo = Utils.getNextPositionFromAngle(positions[lastPos], angle)        
+
+            let newPositions = Utils.getLinePositions(lineFrom, lineTo)
+
+            positions = positions.concat(newPositions)
+
+            if (positions.length >= size) {
+                positions.splice(size)
+                filled = true
+            }
+
+            lineCount++
+
+            if (lineCount === 4) {
+                filled = true
+            }
+        }
+
+        return positions
+    }
+
+    
+    /**
      * Get world position from mouse
      * @param {Object} position Mouse position
      * @param {number} position.x Mouse x position
      * @param {number} position.y Mouse y position
      */
-    getWorldPositionFromMousePosition(position) {
+    convertWorldPos(position) {
         const pos = {
             x: parseInt(position.x / Config.TILE_SIZE),
             y: parseInt(position.y / Config.TILE_SIZE) 
@@ -67,7 +147,7 @@ class ECSHelper extends ECS {
      * @param {boolean} alive 
      */
     getEntityAtMousePosition(position, alive = true) {
-        const pos = this.getWorldPositionFromMousePosition(position)
+        const pos = this.convertWorldPos(position)
 
         return this.getEntityAtPosition(pos, alive)
     }
@@ -108,6 +188,30 @@ class ECSHelper extends ECS {
         })
     }
 
+    /**
+     * Get all units from squad
+     * @param {number} squadId Squad entity id
+     * @returns {number[]} Entities
+     */
+    getSquadUnits(squadId) {
+
+        return this
+            .searchEntities("actor")
+            .filter(entityId => this.get(entityId, "actor", "squadId") === squadId)
+
+    }
+
+    
+    /**
+     * Get squad size
+     * @param {number} squadId Squad entity id
+     * @returns {number} Squad size
+     */
+    getSquadSize(squadId) {
+
+        return this.getSquadUnits(squadId).length
+
+    }
 
     /**
      * Get path between two points

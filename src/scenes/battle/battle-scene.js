@@ -16,16 +16,15 @@ export default class BattleScene extends Phaser.Scene {
         })
 
         this.ecs = ecs
+        this.ui = BattleSceneUI
         this.systems = systems        
     }
 
     create() {
 
-        this.createSceneEntity()
-        this.createPlayer()
-        this.createComputer()
+        //this.drawMap()
+        //this.drawActors()
 
-        this.systems.drawBattle.update()
 
         this.input.on('pointerdown', this.onPointerdown.bind(this))
         this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_DOWN, this.onKeyboardDown.bind(this));
@@ -87,121 +86,18 @@ export default class BattleScene extends Phaser.Scene {
         })
     }
 
-    createSceneEntity() {
+    drawMap() {
 
-        let scene = this.ecs.createFromAssemblage({
-            alias: "Battle",
-            components: ["battle", "map"],
-            data: {
-                battle: {
-                    scene: this,
-                    ui: new BattleSceneUI(this, this.ecs)
-                },
-                map: {
-                    width: 100,
-                    height: 50,
-                    layout: []
-                }
-            }
-        })
+        const map = this.ecs.get("Map", "map")
 
-        const map = this.ecs.get("Battle", "map")
-
-        //Update map layout
-        for (let i = 0; i < map.height; i++) {
-            let row = []
-            
-            for (let j = 0; j < map.width; j++) {
-                row.push(10)
-            }
-            
-            map.layout.push(row)
-        }
+        this.ecs.drawMap(this, map)
     }
 
-    createActorEntity(team, squad, desc, x, y) {
-        let entity = this.ecs.createEntity([
-            "position",
-            "actor",
-            "display"
-        ])
+    drawActors() {
 
-        let {
-            position,
-            actor,
-            display
-        } = this.ecs.get(entity)
+        this.ecs.searchEntities(["display", "position", "actor"]).map(entityId => {
 
-        position.x = x
-        position.y = y
-
-        actor.desc = desc
-        actor.teamId = team
-        actor.squadId = squad
-
-
-        switch (desc) {
-            case "Soldier":
-                display.frame = 1
-                break
-
-            case "Archer":
-                display.frame = 2
-                break
-
-            case "Gobelin":
-                display.frame = 12
-                break
-
-        }
-
-    }
-
-
-    createPlayer() {
-        
-        //Create player 
-        let player = this.ecs.createFromAssemblage({
-            components: ["player"],
-            data: {
-                player: {
-                    desc: "Player"
-                }
-            }
-        })
-
-        //Create squad
-        let squad = this.ecs.createFromAssemblage({
-            components: ["squad"],
-            data: {
-                squad: {
-                    desc: "My soldier squad !",
-                    number: 1,
-                    teamId: player,
-                    ai: "melee"
-                }
-            }
-        })
-
-        //Add soldier to squad
-        Util.getRectanglePositions(2, 3, 3, 6).forEach(pos => {
-            this.createActorEntity(player, squad, "Soldier", pos.x, pos.y)
-        })
-
-        let squad2 = this.ecs.createFromAssemblage({
-            components: ["squad"],
-            data: {
-                squad: {
-                    desc: "My soldier squad !",
-                    number: 2,
-                    teamId: player,
-                    ai: "melee"
-                }
-            }
-        }) 
-        
-        Util.getRectanglePositions(1, 13, 2, 16).forEach(pos => {
-            this.createActorEntity(player, squad2, "Soldier", pos.x, pos.y)
+            this.ecs.drawEntity(this, entityId)
         })        
     }
 

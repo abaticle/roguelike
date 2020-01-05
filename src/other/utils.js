@@ -1,3 +1,5 @@
+import config from "../config";
+
 export default class Utils {
     
 
@@ -12,6 +14,66 @@ export default class Utils {
 
     }
 
+    /**
+     * Get angle in degrees between 2 points
+     * @param {position} center 
+     * @param {position} position 
+     */
+    static getAngle(center, position) {
+        return Math.atan2(position.y - center.y, position.x - center.x) * 180 / Math.PI;
+    }
+
+    static convertToPixelPosition(position) {
+        
+        position.x = ((position.x + 1) * config.TILE_SIZE) - config.TILE_MIDLE_SIZE
+        position.y = ((position.y + 1) * config.TILE_SIZE) - config.TILE_MIDLE_SIZE
+
+        return position
+    }
+
+
+    static getNextPositionFromAngle(position, angle) {
+
+        switch (angle) {
+
+            case 0:
+            case -45:
+                //bottom
+                return {
+                    x: position.x,
+                    y: position.y + 1
+                }
+
+            case 45:
+            case 90:
+                //left
+                return {
+                    x: position.x - 1,
+                    y: position.y
+                }
+
+            case 135:
+            case 180:
+                //top
+                return {
+                    x: position.x,
+                    y: position.y - 1
+                }
+                break
+
+            case -135:
+            case -90:
+                //right
+                return {
+                    x: position.x + 1,
+                    y: position.y
+                }
+            
+                default:
+                throw new Error("Angle not managed", angle)
+        }
+
+    }
 
     /**
      * 
@@ -24,6 +86,14 @@ export default class Utils {
      * @param {number} angle 
      */
     static rotate(center, pos, angle) {
+
+        if (center === undefined) {
+            throw new Error("center is undefined")
+        }
+        if (pos === undefined) {
+            throw new Error("pos is undefined")
+        }
+
         let radians = (Math.PI / 180) * angle;
         let cos = Math.cos(radians);
         let sin = Math.sin(radians);
@@ -106,14 +176,28 @@ export default class Utils {
 
     }
 
-    static getLinePositions (startCoordinates, endCoordinates) {
+    static getLinePositions (from, to) {
+        
+        from.x = from.x < 0 ? 0 : from.x
+        from.y = from.y < 0 ? 0 : from.y
+        to.x = to.x < 0 ? 0 : to.x
+        to.y = to.y < 0 ? 0 : to.y
+
+
+
+        if (from === undefined) {
+            throw new Error("from is undefined")
+        }
+        if (to === undefined) {
+            throw new Error("to is undefined")
+        }
 
         var coordinatesArray = new Array();
 
-        var x1 = startCoordinates.x;
-        var y1 = startCoordinates.y;
-        var x2 = endCoordinates.x;
-        var y2 = endCoordinates.y;
+        var x1 = from.x;
+        var y1 = from.y;
+        var x2 = to.x;
+        var y2 = to.y;
 
         // Define differences and error check
         var dx = Math.abs(x2 - x1);
@@ -128,8 +212,14 @@ export default class Utils {
             y: y1
         });
 
-
+        let count = 0
         while (!((x1 == x2) && (y1 == y2))) {
+            count++
+
+            if (count > 100) {
+                console.warn("from: ", from, " to:", to)
+                throw new Error("DUMP")
+            }
             var e2 = err << 1;
             if (e2 > -dy) {
                 err -= dy;
@@ -147,6 +237,38 @@ export default class Utils {
         }
         
         return coordinatesArray;
+    }
+
+
+    /**
+     * Generate a random map layout 
+     * @param {number} width 
+     * @param {number} height 
+     * @return {number[number[]]}
+     */
+    static getRandomMapLayout(width = 50, height = 50) {
+
+        let layout = []
+
+        for (let i = 0; i < height; i++) {
+            let row = []
+
+            for (let j = 0; j < width; j++) {
+                const randomInt = Utils.randomInteger(1, 100)
+
+                if (randomInt < 8) {
+                    row.push(9)
+                }
+                else {
+                    row.push(10)
+                }
+            }
+
+            layout.push(row)
+        }
+
+        return layout
+
     }
 
 

@@ -1,12 +1,14 @@
 import ECS from "./../../lib/ecs-helper"
-import PrepareBattleSceneUI from "./../../scenes/prepare-battle/prepare-battle-ui"
 import Utils from "./../../other/utils"
 import PrepareBattleUI from "./../../scenes/prepare-battle/prepare-battle-ui";
 import Config from "./../../config"
-import { Util } from "pathfinding";
+import {
+    Util
+} from "pathfinding";
 
-export default class PrepareBattle extends Phaser.Scene{
-    
+
+export default class PrepareBattle extends Phaser.Scene {
+
     /**
      * 
      * @param {ECS} ecs 
@@ -19,20 +21,28 @@ export default class PrepareBattle extends Phaser.Scene{
 
         this.ecs = ecs
         this.systems = systems
-        this.ui = new PrepareBattleUI(ecs, this)
-
-        m.mount(document.getElementById("ui"), this.ui)
-        
-        this.selectionSquares = []
-        this.selectionUnits = []
-
+        this.ui = PrepareBattleUI
+        this.errorSelection = undefined
+        this.isFormationValid = false
         this.from = undefined
         this.to = undefined
+
+        this.ui.setScene(this)
+        this.ui.setECS(ecs)
+
+        m.mount(document.getElementById("ui"), this.ui)
     }
 
     create() {
         this.createSceneEntity()
-        this.updateUI()
+        this.createUI()
+        this.draw()
+    }
+
+
+    draw() {
+        this.ecs.drawMap(this, this.ecs.get("Map", "map"))
+        this.ecs.drawActors(this)
     }
 
 
@@ -40,125 +50,163 @@ export default class PrepareBattle extends Phaser.Scene{
      * 
      * @param {position} position 
      */
-    drawSquare(position) {
-        return this.add.rectangle(position.x, position.y, Config.TILE_SIZE, Config.TILE_SIZE).setStrokeStyle(2, 0xffff00)   
+    drawSquare(position, color = Config.COLOR_SELECTION) {
+
+        return this.add
+            .rectangle(position.x, position.y, Config.TILE_SIZE, Config.TILE_SIZE)
+            .setStrokeStyle(2, color)
+
+    }
+
+
+    /**
+     * Remove all entities sprites from a squad
+     * @param {number} squadId 
+     */
+    removeSquad(squadId) {
+        
+        this.ecs.getSquadUnits(squadId)
+            .forEach(entityId => {
+                const display = this.ecs.get(entityId, "display")
+
+                if (display.sprite !== undefined) {
+                    display.sprite.destroy()
+                }
+            })
     }
 
     /**
-     * Draw a line
-     * @param {position} from 
-     * @param {position} to 
+     * Remove error selection square
      */
-    drawLine(from, to) {
+    removeErrorSelection() {
+        if (this.errorSelection !== undefined) {
+            this.errorSelection.destroy()
+        }
+    }
+    
 
-        //Remove old selection
-        this.selectionSquares.forEach(selection => {
-            selection.destroy()
-        })
+    drawEntity(entityId) {
+        
+        const {
+            display,
+            position
+        } = this.ecs.get(entityId)
 
-        //Create array of positions to draw, and convert to world pos
-        let positions = Utils.getLinePositions(from, to)
+        let pixelPosition = Utils.convertToPixelPosition(position)
+
+        display.x = pixelPosition.x
+        display.y = pixelPosition.y
+
+        display.sprite = this.add.sprite(0, 0, "monsters1", display.frame)
+        
+        display.container = this.add.container(pixelPosition.x, pixelPosition.y)
+        display.container.add(display.sprite)     
+    }
+
+    /**
+     * Draw all entities sprites from a squad. Use position component to draw
+     * @param {number} squadId 
+     */
+    drawSquad(squadId) {
+        
+        this.ecs.getSquadUnits(squadId)
+            .forEach(entityId => {     
+                this.drawEntity(entityId)      
+            })
+    }
+
+    /**
+     * Draw a squad formation
+     * @param {position} from From world position
+     * @param {position} to To world position
+     * @param {number} squadId Squad Id
+     */
+    drawFormation(from, to, squadId) {
+
+        this.removeSquad(squadId)
+        this.removeErrorSelection()
         
 
-        //Add a line behind
-        if (positions.length > 1) {
-                        
-            const fromTemp = Utils.rotate(positions[0], positions[1], 270)
-            const toTemp = Utils.rotate(positions[positions.length - 1], positions[positions.length - 2], 90)
 
-            Utils.getLinePositions(fromTemp, toTemp).forEach(position => {
-                positions.push(position)
-            })            
+        const units = this.ecs.getSquadUnits(squadId)
+        const positions = this.ecs.getFormationPositions(from, to, units.length)
+
+        //Check if formation fit
+        this.isFormationValid = units.length === positions.length
+
+        if (this.isFormationValid) {
+
+            //Update units positions
+            units.forEach((entityId, index) => {
+                const position = this.ecs.get(entityId, "position")
+
+                position.x = positions[index].x
+                position.y = positions[index].y
+            })
+
+            this.drawSquad(squadId)
         }
 
-
-        positions = positions.map(position => {
-            position.x = ((position.x + 1) * 32) - 16
-            position.y = ((position.y + 1) * 32) - 16
-
-            return position
-        })
-        
-        //Draw each squares 
-        positions.forEach((position, index) => {
-  
-            const selection = this.drawSquare(position)
+        else {
             
-            //Fill an array of squares :
-            this.selectionSquares.push(selection)
-        })
+            this.ecs.set(false, squadId, "squad", "placed")
+
+            this.errorSelection = this.drawSquare(Utils.convertToPixelPosition(positions[0]), Config.COLOR_SELECTION_ERROR)
+        } 
     }
 
-    getSquadUnits(squadId) {
-        
-    }
-  
+
     update() {
 
-        const squadId = placingSquadId
+        const pointer = this.input.activePointer
+        const squadId = this.ui.getPlacingSquadId()
 
-        if (this.ui.placingSquadId !== undefined) {
+        if (squadId !== undefined) {
 
-            if (this.input.activePointer.isDown) {
+            if (pointer.downElement.nodeName === "CANVAS") {
 
-                if (this.from === undefined) {
-                    this.from = this.ecs.getWorldPositionFromMousePosition(this.input.activePointer.position)                
-                }
-                
-                this.to = this.ecs.getWorldPositionFromMousePosition(this.input.activePointer.position)   
+                if (pointer.isDown) {
+
+                    if (this.from === undefined) {
+                        this.from = this.ecs.convertWorldPos(pointer.position)
+                    }
     
-                this.drawLine(this.from, this.to)
-            } else {
-                if (this.from && this.to) {
-                    this.drawLine(this.from, this.to)
+                    this.to = this.ecs.convertWorldPos(pointer.position)
     
-                    this.from = undefined
-                    this.to = undefined
+                    this.drawFormation(this.from, this.to, squadId)
+    
+                } else {
+                    if (this.from && this.to) {
+                        this.from = undefined
+                        this.to = undefined
+                    }
+    
+                    this.ui.setCanConfirm(this.isFormationValid)
                 }
-            }   
-        }     
+            }
+
+        }
     }
-    
+
     createSceneEntity() {
-        let scene = this.ecs.createFromAssemblage({
+        
+        this.ecs.createFromAssemblage({
             alias: "PrepareBattle",
-            components: ["battle", "map"],
+            components: ["prepareBattle"],
             data: {
                 prepareBattle: {
-                    scene: this,
-                    ui: new PrepareBattleSceneUI(this, this.ecs)
-                },
-                map: {
-                    width: 120,
-                    height: 50,
-                    layout: []
+                    scene: this
                 }
             }
         })
 
-        const map = this.ecs.get("PrepareBattle", "map")
-
-        //Update map layout
-        for (let i = 0; i < map.height; i++) {
-            let row = []
-            
-            for (let j = 0; j < map.width; j++) {
-                //row.push(10)
-                row.push(Utils.randomInteger(9, 10))
-            }
-            
-            map.layout.push(row)
-        }      
-        
-        //Draw map:
-        this.ecs.drawMap(this, map)
     }
 
     createPlayer() {
 
     }
 
-    updateUI() {
+    createUI() {
 
         //Get current player
         const playerId = this.ecs.getAlias("Player")
@@ -185,7 +233,7 @@ export default class PrepareBattle extends Phaser.Scene{
 
                 squads.push({
                     squadId,
-                    desc: squad.desc, 
+                    desc: squad.desc,
                     number: squad.number,
                     placing: false,
                     units
@@ -194,6 +242,6 @@ export default class PrepareBattle extends Phaser.Scene{
         })
 
         //Update UI 
-        this.ui.updateSquads(squads)
+        this.ui.setSquads(squads)
     }
 }

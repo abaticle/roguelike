@@ -20,9 +20,19 @@ export const PositionComponent = {
     y: 0
 }
 
+/**
+ * @typedef {object} SquadComponent Squad component
+ * @property {string} name Component name
+ * @property {string} desc Actor description
+ * @property {boolean} placed 
+ * @property {number} number Squad number
+ * @property {number} teamId Squad team entity id
+ * @property {string} ai Squad AI
+ */
 export const SquadComponent = {
     name: "squad",
     desc: "",
+    placed: false,
     number: 1,
     teamId: undefined,
     ai: "melee"
