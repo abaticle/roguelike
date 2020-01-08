@@ -2,45 +2,64 @@ import ECS from "../lib/ecs-helper";
 
 
 export default class EntityFactory {
+
+    /**
+     * 
+     * @param {ECS} ecs 
+     */
     constructor(ecs) {
         this.ecs = ecs
     }
 
-    createActor(teamId = undefined, squadId = undefined, desc = "Soldier", x = 0, y = 0) {
-
-        let entity = this.ecs.createEntity([
-            "position",
-            "actor",
-            "display"
-        ])
-
-        let {
-            position,
-            actor,
-            display
-        } = this.ecs.get(entity)
-
-        position.x = x
-        position.y = y
-
-        actor.desc = desc
-        actor.teamId = teamId
-        actor.squadId = squadId
-
+    /**
+     * Get frame from actor desc
+     * @param {string} desc 
+     * @returns {number} Frame number
+     */
+    getFrame(desc) {
 
         switch (desc) {
             case "Soldier":
-                display.frame = 1
-                break
+                return 1
 
             case "Archer":
-                display.frame = 2
-                break
+                return 2
 
             case "Gobelin":
-                display.frame = 12
-                break
+                return 12
 
         }        
+    }
+
+    /**
+     * 
+     * @param {number?} teamId 
+     * @param {number}? squadId 
+     * @param {desc?} desc 
+     * @param {number?} x 
+     * @param {number?} y 
+     * @param {boolean?} draw 
+     */
+    createActor(teamId = undefined, squadId = undefined, desc = "Soldier", x = 0, y = 0, draw = true) {
+
+        this.ecs.createFromAssemblage({
+            components: ["position", "actor", "display"],
+            data: {
+                position: {
+                    x,
+                    y
+                },
+                actor: {
+                    desc, 
+                    squadId,
+                    teamId
+                },
+                display: {
+                    draw,
+                    frame: this.getFrame(desc)
+                }
+            }
+        })
+        
     }
 }

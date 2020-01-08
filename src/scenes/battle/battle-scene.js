@@ -22,10 +22,6 @@ export default class BattleScene extends Phaser.Scene {
 
     create() {
 
-        //this.drawMap()
-        //this.drawActors()
-
-
         this.input.on('pointerdown', this.onPointerdown.bind(this))
         this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_DOWN, this.onKeyboardDown.bind(this));
     }
@@ -63,7 +59,7 @@ export default class BattleScene extends Phaser.Scene {
     }
 
     checkEnd() {
-        const players = this.ecs.searchEntities("player")
+        const players = this.ecs.searchEntities("team")
 
         players.forEach(playerId => {
             const player = this.ecs.get(playerId, "player")

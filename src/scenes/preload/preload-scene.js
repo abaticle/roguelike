@@ -1,8 +1,9 @@
 import ECS from "./../../lib/ecs-helper"
 import EntityFactory from "../../factories/entity-factory"
 import Utils from "../../other/utils"
+import SceneBase from "../scene-base"
 
-export default class PreloadScene extends Phaser.Scene {
+export default class PreloadScene extends SceneBase {
     /**
      * Class constructor
      * @param {ECS} ecs 
@@ -10,11 +11,10 @@ export default class PreloadScene extends Phaser.Scene {
      */
     constructor(ecs, systems) {
         super({
-            key: "Preload"
+            key: "Preload",
+            ecs,
+            systems
         })
-
-        this.ecs = ecs
-        this.systems = systems
     }
 
 
@@ -56,14 +56,10 @@ export default class PreloadScene extends Phaser.Scene {
                 map: {
                     width: 120,
                     height: 50,
-                    layout: []
+                    layout: Utils.getRandomMapLayout(120, 50)
                 }
             }
         })        
-
-        const map = this.ecs.get("Map", "map")
-
-        map.layout = Utils.getRandomMapLayout(map.width, map.height)
     }
 
     /**
@@ -72,9 +68,9 @@ export default class PreloadScene extends Phaser.Scene {
     createComputer() {
         let computer = this.ecs.createFromAssemblage({
             alias: "Computer",
-            components: ["player"],
+            components: ["team"],
             data: {
-                player: {
+                team: {
                     desc: "Computer"
                 }
             }
@@ -96,9 +92,9 @@ export default class PreloadScene extends Phaser.Scene {
 
         const entityFactory = new EntityFactory(this.ecs)
         
-        Utils.getRectanglePositions(20, 5, 22, 10).forEach(pos => {            
+        Utils.getRectanglePositions(20, 5, 22, 5).forEach(({x, y}) => {            
 
-            entityFactory.createActor(computer, squad, "Gobelin", pos.x, pos.y)
+            entityFactory.createActor(computer, squad, "Gobelin", x, y, true)
             
         });
     }
@@ -111,9 +107,9 @@ export default class PreloadScene extends Phaser.Scene {
         //Create player 
         let player = this.ecs.createFromAssemblage({
             alias: "Player",
-            components: ["player"],
+            components: ["team"],
             data: {
-                player: {
+                team: {
                     desc: "Player"
                 }
             }
@@ -147,24 +143,13 @@ export default class PreloadScene extends Phaser.Scene {
 
         const entityFactory = new EntityFactory(this.ecs)
 
-        entityFactory.createActor(player, squad, "Soldier")
-        entityFactory.createActor(player, squad, "Soldier")
-        entityFactory.createActor(player, squad, "Soldier")
-        entityFactory.createActor(player, squad, "Soldier")
-        entityFactory.createActor(player, squad, "Soldier")
-        entityFactory.createActor(player, squad, "Soldier")
-        entityFactory.createActor(player, squad, "Soldier")
-        entityFactory.createActor(player, squad, "Soldier")
-        entityFactory.createActor(player, squad, "Soldier")
-        entityFactory.createActor(player, squad, "Soldier")
-        entityFactory.createActor(player, squad2, "Archer")
-        entityFactory.createActor(player, squad2, "Archer")
-        entityFactory.createActor(player, squad2, "Archer")
-        entityFactory.createActor(player, squad2, "Archer")
-        entityFactory.createActor(player, squad2, "Archer")
-        entityFactory.createActor(player, squad2, "Archer")
-        entityFactory.createActor(player, squad2, "Archer")
-        entityFactory.createActor(player, squad2, "Archer")
+        for (let i = 0; i < 3; i++) {
+            entityFactory.createActor(player, squad, "Soldier", 0, 0, false)
+        }
+
+        for (let i = 0; i < 10; i++) {
+            //entityFactory.createActor(player, squad2, "Archer", 0, 0, false)
+        }
     }
 
     /**

@@ -12,7 +12,7 @@ import Components from "./components/components"
 
 //Systems 
 import Animation from "./systems/animation-system"
-import DrawBattle from "./systems/draw-battle-system"
+import Draw from "./systems/draw-system"
 import Movement from "./systems/movement-system"
 import PreparePathfinding from "./systems/prepare-pathfinding"
 import TeamCounter from "./systems/team-counter-system"
@@ -38,12 +38,17 @@ export default class Game extends Phaser.Game {
         //Create systems
         const systems = {
             animation: new Animation(ecs),
-            drawBattle: new DrawBattle(ecs),
+            draw: new Draw(ecs),
             movement: new Movement(ecs),
             preparePathfinding: new PreparePathfinding(ecs),
             teamCounter: new TeamCounter(ecs),
             ui: new UI(ecs)
         }
+
+        //Create game component
+        let game = ecs.createEntity("game")
+
+        ecs.createAlias("Game", game)
         
         //Add scenes
         this.scene.add("Preload", new PreloadScene(ecs, systems))

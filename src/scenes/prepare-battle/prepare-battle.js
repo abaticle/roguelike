@@ -2,12 +2,10 @@ import ECS from "./../../lib/ecs-helper"
 import Utils from "./../../other/utils"
 import PrepareBattleUI from "./../../scenes/prepare-battle/prepare-battle-ui";
 import Config from "./../../config"
-import {
-    Util
-} from "pathfinding";
+import SceneBase from "../scene-base"
 
 
-export default class PrepareBattle extends Phaser.Scene {
+export default class PrepareBattle extends SceneBase {
 
     /**
      * 
@@ -16,29 +14,36 @@ export default class PrepareBattle extends Phaser.Scene {
      */
     constructor(ecs, systems) {
         super({
-            key: "PrepareBattle"
+            key: "PrepareBattle",
+            ecs,
+            systems
         })
-
-        this.ecs = ecs
-        this.systems = systems
-        this.ui = PrepareBattleUI
+        
+        this.ui = PrepareBattleUI        
         this.errorSelection = undefined
         this.isFormationValid = false
         this.from = undefined
         this.to = undefined
 
-        this.ui.setScene(this)
-        this.ui.setECS(ecs)
-
-        m.mount(document.getElementById("ui"), this.ui)
     }
 
     create() {
-        this.createSceneEntity()
         this.createUI()
-        this.draw()
+        //this.draw()
     }
 
+
+    /**
+     * Create DOM
+     */
+    createUI() {
+
+        this.ui.setScene(this)
+        this.ui.setECS(this.ecs)
+
+        m.mount(document.getElementById("ui"), this.ui)
+
+    }
 
     draw() {
         this.ecs.drawMap(this, this.ecs.get("Map", "map"))
@@ -46,15 +51,10 @@ export default class PrepareBattle extends Phaser.Scene {
     }
 
 
-    /**
-     * 
-     * @param {position} position 
-     */
-    drawSquare(position, color = Config.COLOR_SELECTION) {
 
-        return this.add
-            .rectangle(position.x, position.y, Config.TILE_SIZE, Config.TILE_SIZE)
-            .setStrokeStyle(2, color)
+    update() {
+        this.systems.draw.update()
+
 
     }
 
@@ -85,33 +85,15 @@ export default class PrepareBattle extends Phaser.Scene {
     }
     
 
-    drawEntity(entityId) {
-        
-        const {
-            display,
-            position
-        } = this.ecs.get(entityId)
-
-        let pixelPosition = Utils.convertToPixelPosition(position)
-
-        display.x = pixelPosition.x
-        display.y = pixelPosition.y
-
-        display.sprite = this.add.sprite(0, 0, "monsters1", display.frame)
-        
-        display.container = this.add.container(pixelPosition.x, pixelPosition.y)
-        display.container.add(display.sprite)     
-    }
-
     /**
-     * Draw all entities sprites from a squad. Use position component to draw
+     * Draw all entities from a squad. Use position component to draw
      * @param {number} squadId 
      */
     drawSquad(squadId) {
         
         this.ecs.getSquadUnits(squadId)
             .forEach(entityId => {     
-                this.drawEntity(entityId)      
+                this.ecs.drawEntity(this, entityId)      
             })
     }
 
@@ -151,12 +133,17 @@ export default class PrepareBattle extends Phaser.Scene {
             
             this.ecs.set(false, squadId, "squad", "placed")
 
-            this.errorSelection = this.drawSquare(Utils.convertToPixelPosition(positions[0]), Config.COLOR_SELECTION_ERROR)
+            this.errorSelection = this.ecs.drawSquare(this, Utils.convertToPixelPosition(positions[0]), Config.COLOR_SELECTION_ERROR)
         } 
     }
 
 
     update() {
+
+
+        this.systems.draw.update()
+
+        
 
         const pointer = this.input.activePointer
         const squadId = this.ui.getPlacingSquadId()
@@ -188,60 +175,8 @@ export default class PrepareBattle extends Phaser.Scene {
         }
     }
 
-    createSceneEntity() {
-        
-        this.ecs.createFromAssemblage({
-            alias: "PrepareBattle",
-            components: ["prepareBattle"],
-            data: {
-                prepareBattle: {
-                    scene: this
-                }
-            }
-        })
-
-    }
-
     createPlayer() {
 
     }
 
-    createUI() {
-
-        //Get current player
-        const playerId = this.ecs.getAlias("Player")
-
-
-        //Fill squad array
-        const squads = []
-
-        this.ecs.searchEntities("squad").forEach(squadId => {
-
-            const squad = this.ecs.get(squadId, "squad")
-
-            if (squad.teamId === playerId) {
-
-                const units = this.ecs
-                    .searchEntities("actor")
-                    .filter(actorId => {
-                        if (this.ecs.get(actorId, "actor", "squadId") === squadId) {
-                            return true
-                        }
-                        return false
-                    })
-                    .map((actorId => this.ecs.get(actorId, "actor")))
-
-                squads.push({
-                    squadId,
-                    desc: squad.desc,
-                    number: squad.number,
-                    placing: false,
-                    units
-                })
-            }
-        })
-
-        //Update UI 
-        this.ui.setSquads(squads)
-    }
 }

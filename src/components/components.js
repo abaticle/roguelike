@@ -7,13 +7,17 @@ import PF from "pathfinding"
  * @property {boolean} controled Controled by user ?
  * @property {number} count Number of units
  */
-export const PlayerComponent = {
-    name: "player",
+export const TeamComponent = {
+    name: "team",
     desc: "",
-    controled: false,
     count: 0
 }
 
+/**
+ * @typedef {object} PositionComponent Position component
+ * @property {number} x X Position
+ * @property {number} y Y Position
+ */
 export const PositionComponent = {
     name: "position",
     x: 0,
@@ -55,18 +59,27 @@ export const ActorComponent = {
     squadId: undefined
 } 
 
-
+/**
+ * @typedef {object} DisplayComponent Actor component
+ * @property {string} name Component name
+ * @property {Phaser.GameObjects.Sprite} sprite Phaser sprite
+ * @property {Phaser.GameObjects.Container} container Phaser container
+ * @property {boolean} selectorVisible Selector visible ?
+ * @property {boolean} draw Draw component ?
+ * @property {number} frame Frame id
+ */
 export const DisplayComponent = {
     name: "display",
     sprite: undefined,
     container: undefined,
-    x: 0,
-    y: 0,
-    selectorVisible: false
+    selectorVisible: false,
+    draw: false,
+    frame: 0
 }
 
 export const GameComponent = {
-    name: "game"
+    name: "game",
+    scene: undefined
 }
 
 export const BattleComponent = {
@@ -112,7 +125,7 @@ const Components = [
     SquadComponent,
     DisplayComponent,
     MapComponent,
-    PlayerComponent,
+    TeamComponent,
     GameComponent,
     BattleComponent,
     PrepareBattleComponent

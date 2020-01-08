@@ -8,22 +8,87 @@ class ECSHelper extends ECS {
     constructor() {
         super()
     }   
+
+    
+    /**
+     * @returns {number[]} Teams entities id
+     */
+    get teams () {
+        return this.searchEntities("team")
+    }
+
+    /**
+     * @returns {number[]} Squads entities id
+     */
+    get squads () {
+        return this.searchEntities("squad")
+    }
+
+    /**
+     * @returns {number[]} Actors entities id
+     */
+    get actors () {
+        return this.searchEntities("actor")
+    }
+
+
+    /**
+     * @returns {number} Map entity id
+     */
+    get map () {
+        return this.getAlias("Map")
+    }
+
+    get player () {
+        return this.getAlias("Player")
+    }
+
+    get computer () {
+        return this.getAlias("Computer")
+    }
+
+    /**
+     * @param {number} teamId Team id
+     * @returns {number[]} Squads entities id
+     */    
+    getTeamSquads(teamId) {
+        return this.squads.filter(id => this.get(id, "squad", "teamId") === teamId)
+    }
+
+    /**
+     * @param {number} squadId Squad id
+     * @returns {number[]} Actors entities id
+     */  
+    getSquadUnits(squadId) {
+        return this.actors.filter(id => this.get(id, "actor", "squadId") === squadId)
+    }
+
+
     
     /**
      * @returns {MapComponent}
      */
     getCurrentMap() {
-        const entityId = this.searchEntities("map")[0]
+        //const entityId = this.searchEntities("map")[0]
+        return this.get(this.map, "map")
+    }
 
-        return this.get(entityId, "map")
+    /**
+     * 
+     * @param {position} position 
+     */
+    drawSquare(scene, position, color = Config.COLOR_SELECTION) {
+
+        return scene.add
+            .rectangle(position.x, position.y, Config.TILE_SIZE, Config.TILE_SIZE)
+            .setStrokeStyle(2, color)
+
     }
 
 
 
-    drawActors(scene) {
-
-        this.searchEntities("actor")
-
+    get scene() {
+        return this.get("Game", "game", "scene")
     }
 
 
@@ -34,16 +99,33 @@ class ECSHelper extends ECS {
             position
         } = this.get(entityId)
 
-        let pixelPosition = Utils.convertToPixelPosition(position)
+        if (display.draw) {
 
-        display.x = pixelPosition.x
-        display.y = pixelPosition.y
+            let {
+                x,
+                y
+            } = Utils.convertToPixelPosition(position)
 
-        display.sprite = scene.add.sprite(0, 0, "monsters1", display.frame)
-        
-        display.container = scene.add.container(display.x, display.y)
-        display.container.add(display.sprite)     
-        
+            if (display.container) {
+                display.container.x = x 
+                display.container.y = y
+            }
+
+            else { 
+                display.container = scene.add.container(x, y)
+                display.container.add(scene.add.sprite(0, 0, "monsters1", display.frame))   
+            }   
+
+        }
+
+        else {
+            if (display.container) {
+                display.container.destroy()            
+            }
+        }
+
+
+          
     }
 
 

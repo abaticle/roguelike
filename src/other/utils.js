@@ -25,10 +25,11 @@ export default class Utils {
 
     static convertToPixelPosition(position) {
         
-        position.x = ((position.x + 1) * config.TILE_SIZE) - config.TILE_MIDLE_SIZE
-        position.y = ((position.y + 1) * config.TILE_SIZE) - config.TILE_MIDLE_SIZE
-
-        return position
+        return {
+            x: ((position.x + 1) * config.TILE_SIZE) - config.TILE_MIDLE_SIZE,
+            y: ((position.y + 1) * config.TILE_SIZE) - config.TILE_MIDLE_SIZE
+        }
+        
     }
 
 
