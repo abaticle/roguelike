@@ -13,16 +13,19 @@ export default class DrawSystem {
 
     drawMap(scene) {
 
+        this.ecs.drawMapEntity()
+
     }
 
     drawActors(scene) {
 
-        this.ecs.actors.forEach(id => this.ecs.drawEntity(this.ecs.scene, id))
+        this.ecs.actors.forEach(id => this.ecs.drawPositionEntity(id))
 
     }
 
     update() {
 
+        this.drawMap()
         this.drawActors()
         
     }

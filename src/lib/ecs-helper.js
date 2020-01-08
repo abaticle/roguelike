@@ -33,10 +33,10 @@ class ECSHelper extends ECS {
 
 
     /**
-     * @returns {number} Map entity id
+     * @returns {MapComponent} Map component
      */
     get map () {
-        return this.getAlias("Map")
+        return this.get("Map", "map")
     }
 
     get player () {
@@ -62,8 +62,6 @@ class ECSHelper extends ECS {
     getSquadUnits(squadId) {
         return this.actors.filter(id => this.get(id, "actor", "squadId") === squadId)
     }
-
-
     
     /**
      * @returns {MapComponent}
@@ -92,12 +90,16 @@ class ECSHelper extends ECS {
     }
 
 
-    drawEntity(scene, entityId) {
+    drawPositionEntity(entityId) {
     
         const {
             display,
             position
         } = this.get(entityId)
+
+        const {
+            scene
+        } = this
 
         if (display.draw) {
 
@@ -134,7 +136,7 @@ class ECSHelper extends ECS {
      * @param {Phaser.Scene} scene 
      * @param {MapComponent} map 
      */
-    drawMap(scene, map) {
+    drawMapOld(scene, map) {
 
         map.tilemap = scene.make.tilemap({
             data: map.layout,
@@ -145,6 +147,27 @@ class ECSHelper extends ECS {
         const tiles = map.tilemap.addTilesetImage("ground1");
         
         map.tilemap.createStaticLayer(0, tiles, 0, 0);
+    }
+
+    drawMapEntity() {
+
+        const {
+            map,
+            scene
+        } = this
+
+        if (map.tilemap === undefined) {
+
+            map.tilemap = scene.make.tilemap({
+                data: map.layout,
+                tileWidth: 32,
+                tileHeight: 32
+            });        
+            
+            const tiles = map.tilemap.addTilesetImage("ground1");
+            
+            map.tilemap.createStaticLayer(0, tiles, 0, 0);
+        }
     }
 
 
@@ -212,12 +235,10 @@ class ECSHelper extends ECS {
      * @param {number} position.y Mouse y position
      */
     convertWorldPos(position) {
-        const pos = {
+        return {
             x: parseInt(position.x / Config.TILE_SIZE),
             y: parseInt(position.y / Config.TILE_SIZE) 
         }
-
-        return pos
     }
 
 

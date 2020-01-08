@@ -1,7 +1,5 @@
 import ECS from "./../../lib/ecs-helper"
 
-
-
  /** @type {ECS */
  let ecs
 

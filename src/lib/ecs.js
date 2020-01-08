@@ -60,7 +60,10 @@ export default class ECS {
 
     /**
      * Create an entity from an assemblage
-     * @param {{components: {string[]}, data: {object}, ?alias:{string}}} assemblage 
+     * @param {Object} assemblage
+     * @param {string[]} assemblage.components Component list
+     * @param {string?} assemblage.alias Entity alias
+     * @param {Object} assemblage.data
      * @returns {number} New entity id
      */
     createFromAssemblage(assemblage) {

@@ -29,7 +29,6 @@ export default class PrepareBattle extends SceneBase {
 
     create() {
         this.createUI()
-        //this.draw()
     }
 
 
@@ -45,17 +44,9 @@ export default class PrepareBattle extends SceneBase {
 
     }
 
-    draw() {
-        this.ecs.drawMap(this, this.ecs.get("Map", "map"))
-        this.ecs.drawActors(this)
-    }
-
-
-
     update() {
         this.systems.draw.update()
-
-
+        this.systems.input.update()
     }
 
 
@@ -142,6 +133,7 @@ export default class PrepareBattle extends SceneBase {
 
 
         this.systems.draw.update()
+        this.systems.input.update()
 
         
 

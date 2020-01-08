@@ -4,7 +4,13 @@ export default class InputSystem {
         this.ecs = ecs 
     }
 
+    get pointer() {
+        return this.ecs.scene.input.activePointer
+    }
+
     update() {
-        
+        const scene = this.ecs.scene
+
+
     }
 }

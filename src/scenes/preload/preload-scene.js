@@ -90,11 +90,18 @@ export default class PreloadScene extends SceneBase {
         })     
 
 
-        const entityFactory = new EntityFactory(this.ecs)
+        const factory = new EntityFactory(this.ecs)
         
         Utils.getRectanglePositions(20, 5, 22, 5).forEach(({x, y}) => {            
-
-            entityFactory.createActor(computer, squad, "Gobelin", x, y, true)
+            
+            factory.createActor({
+                teamId: computer,
+                squadId: squad,
+                desc: "Gobelin",
+                x,
+                y,
+                draw: true
+            })
             
         });
     }
@@ -141,14 +148,19 @@ export default class PreloadScene extends SceneBase {
             }
         })        
 
-        const entityFactory = new EntityFactory(this.ecs)
+        const factory = new EntityFactory(this.ecs)
 
         for (let i = 0; i < 3; i++) {
-            entityFactory.createActor(player, squad, "Soldier", 0, 0, false)
-        }
+            
+            factory.createActor({
+                teamId: player,
+                squadId: squad,
+                x: 0,
+                y: 0,
+                draw: false
 
-        for (let i = 0; i < 10; i++) {
-            //entityFactory.createActor(player, squad2, "Archer", 0, 0, false)
+            })
+
         }
     }
 
