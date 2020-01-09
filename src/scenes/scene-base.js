@@ -1,8 +1,13 @@
+import ECS from "../lib/ecs-helper"
+
 export default class SceneBase extends Phaser.Scene {
 
     /**
      * 
-     * @param {object} param0 
+     * @param {object} options
+     * @param {string} options.key Scene key
+     * @param {ECS} options.ecs ECS
+     * @param {object} options.systems Systems
      */
     constructor({key, ecs, systems}) {
         super(key)

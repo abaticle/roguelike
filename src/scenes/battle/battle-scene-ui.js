@@ -68,15 +68,10 @@ const BattleSceneUI = {
 export default BattleSceneUI
 
 
-
+/*
 
 class BattleSceneUIOld {
 
-    /**
-     * 
-     * @param {BattleScene} scene 
-     * @param {ECS} ecs
-     */
     constructor(scene, ecs) {
         this.scene = scene
         this.ecs = ecs
@@ -188,3 +183,5 @@ class BattleSceneUIOld {
     }
 
 }
+
+*/

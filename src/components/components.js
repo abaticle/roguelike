@@ -77,6 +77,11 @@ export const DisplayComponent = {
     frame: 0
 }
 
+/**
+ * @typedef {object} GameComponent Game component
+ * @property {string} name Component name
+ * @property {Phaser.Scene} scene Current Phaser scene
+ */
 export const GameComponent = {
     name: "game",
     scene: undefined
@@ -92,10 +97,15 @@ export const BattleComponent = {
     actions: []
 }
 
+/**
+ * @typedef PrepareBattleComponent
+ * @property {undefined|number} placingSquadId
+ */
 export const PrepareBattleComponent = {
     name: "prepareBattle",
-    scene: undefined,
-    ui: undefined
+    placingSquadId: undefined,
+    from: undefined,
+    to: undefined
 }
 
 /**

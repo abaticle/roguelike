@@ -28,9 +28,17 @@ export default class PrepareBattle extends SceneBase {
     }
 
     create() {
+        this.createSceneEntity()
         this.createUI()
     }
 
+
+    createSceneEntity() {
+        this.ecs.createFromAssemblage({
+            components: ["prepareBattle"],
+            alias: "PrepareBattle"
+        })
+    }
 
     /**
      * Create DOM

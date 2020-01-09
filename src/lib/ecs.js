@@ -75,8 +75,10 @@ export default class ECS {
         });
 
         //Update data
-        for (let [component, value] of Object.entries(assemblage.data)) {
-            this.set(value, entity, component)
+        if ("data" in assemblage) {
+            for (let [component, value] of Object.entries(assemblage.data)) {
+                this.set(value, entity, component)
+            }
         }
 
         //Set alias

@@ -24,6 +24,13 @@ class ECSHelper extends ECS {
         return this.searchEntities("squad")
     }
 
+    /** 
+     * @returns {number[]} Player squads
+     */
+    get playerSquads () {
+        return this.getTeamSquads(this.player)
+    }
+
     /**
      * @returns {number[]} Actors entities id
      */

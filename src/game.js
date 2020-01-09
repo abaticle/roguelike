@@ -17,7 +17,6 @@ import Input from "./systems/input-system"
 import Movement from "./systems/movement-system"
 import PreparePathfinding from "./systems/prepare-pathfinding"
 import TeamCounter from "./systems/team-counter-system"
-import UI from "./systems/ui-system"
 
 
 export default class Game extends Phaser.Game {
@@ -33,18 +32,17 @@ export default class Game extends Phaser.Game {
         //Create ECS
         const ecs = new ECS()
 
-        //Register components
-        Components.map(component => ecs.registerComponent(component))
+        //Init components
+        ecs.registerComponent(Components)
         
-        //Create systems
+        //Init systems
         const systems = {
             animation: new Animation(ecs),
             draw: new Draw(ecs),
             input: new Input(ecs),
             movement: new Movement(ecs),
             preparePathfinding: new PreparePathfinding(ecs),
-            teamCounter: new TeamCounter(ecs),
-            ui: new UI(ecs)
+            teamCounter: new TeamCounter(ecs)
         }
 
         //Create game component
@@ -64,4 +62,5 @@ export default class Game extends Phaser.Game {
 
         window.ecs = ecs
     }
+
 }

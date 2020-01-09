@@ -1,4 +1,5 @@
 import ECS from "./../../lib/ecs-helper"
+import { PrepareBattleComponent } from "../../components/components"
 
  /** @type {ECS */
  let ecs
@@ -16,28 +17,21 @@ import ECS from "./../../lib/ecs-helper"
  */
 const data = {
     placingSquadId: undefined,
-    squads: [],
     battleReady: false,
     canConfirm: false
 }
 
 
-const getSquads = () => {
-
-    return ecs.getTeamSquads(ecs.player).map(squadId => {
-        return {
-            squad: ecs.get(squadId, "squad"),
-            units: ecs.getSquadUnits(squadId).map(id => ecs.get(id, "actor"))
-        }
-    })
-
-}
+/** @type {PrepareBattleComponent} */
+let prepareBattle 
 
 
 const PrepareBattleUI = {
 
     setECS(ecsParam) {
         ecs = ecsParam
+
+        prepareBattle = ecs.get("PrepareBattle", "prepareBattle")
     },
 
     setScene(sceneParam) {
@@ -59,11 +53,11 @@ const PrepareBattleUI = {
 
 
     onToBattleClick: () => {
-        data.scene.scene.start("Battle")
+        ecs.scene.start("Battle")
     },
 
-    onPlaceButtonClick: (squad) => {
-        data.placingSquadId = squad.squadId
+    onPlaceButtonClick: (squadId) => {
+        prepareBattle.placingSquadId = squadId
         
         m.redraw()  
     },
@@ -95,23 +89,21 @@ const PrepareBattleUI = {
 
             //Title for placing squad, canceling and validating
             m("h3", {
-                class: data.placingSquadId === undefined ? "hidden" : "",
-            }, "Placing squad " + data.placingSquadId),
+                class: prepareBattle.placingSquadId === undefined ? "hidden" : "",
+            }, "Placing squad " + prepareBattle.placingSquadId),
 
             //Squad list
-            m("div", getSquads().map(squadData => {
+            m("div", ecs.playerSquads.map(squadId => {
 
-                const {
-                    squad,
-                    units
-                } = squadData
+                const squad = ecs.get(squadId, "squad")
+                const units = ecs.getSquadUnits(squadId)
 
                 return m("p", [
                     m("span", squad.desc + " (" + units.length + " units)"),
                     m("br"),
                     m("button.pure-button", {
-                        class: data.placingSquadId !== undefined ? "pure-button-disabled" : "",
-                        onclick: () => PrepareBattleUI.onPlaceButtonClick(squad)
+                        class: prepareBattle.placingSquadId !== undefined ? "pure-button-disabled" : "",
+                        onclick: () => PrepareBattleUI.onPlaceButtonClick(squadId)
                     }, "Place"),
                     m("button.pure-button", {
                         class: PrepareBattleUI.confirmButtonClass(squad),
