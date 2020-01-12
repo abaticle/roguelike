@@ -1,29 +1,52 @@
-import Phaser from "phaser"
-import BattleSceneUI from "./battle-scene-ui"
-import Util from "../../other/utils"
 import ECS from "../../lib/ecs-helper"
+import BattleSceneUI from "./battle-scene-ui"
+import SceneBase from "../scene-base"
+import { BattleComponent } from "../../components/components"
 
-export default class BattleScene extends Phaser.Scene {
+export default class BattleScene extends SceneBase {
 
     /**
      * 
      * @param {ECS} ecs 
-     * @param {*} systems 
+     * @param {object} systems 
      */
     constructor(ecs, systems) {
         super({
-            key: "Battle"
+            key: "Battle",
+            ecs,
+            systems,
+            ui: BattleSceneUI
         })
-
-        this.ecs = ecs
-        this.ui = BattleSceneUI
-        this.systems = systems        
     }
 
     create() {
+        this.createSceneEntity()
+        this.createUI()
 
-        this.input.on('pointerdown', this.onPointerdown.bind(this))
-        this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_DOWN, this.onKeyboardDown.bind(this));
+        //this.input.on('pointerdown', this.onPointerdown.bind(this))
+        //this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_DOWN, this.onKeyboardDown.bind(this));
+    }
+
+
+    createSceneEntity() {
+        this.ecs.createFromAssemblage({
+            components: ["battle"],
+            alias: "Battle",
+            data: {
+                battle: {
+                    newTurn: false,
+                    speed: 1,
+                    turn: 0,
+                    actions: []                    
+                }
+            }
+        })
+    }
+
+    createUI() {
+        this.ui.init(this.ecs)
+
+        m.mount(document.getElementById("ui"), this.ui)
     }
 
 
@@ -82,58 +105,31 @@ export default class BattleScene extends Phaser.Scene {
         })
     }
 
-    drawMap() {
-
-        const map = this.ecs.get("Map", "map")
-
-        this.ecs.drawMap(this, map)
-    }
-
-    drawActors() {
-
-        this.ecs.searchEntities(["display", "position", "actor"]).map(entityId => {
-
-            this.ecs.drawEntity(this, entityId)
-        })        
-    }
-
-
-    createComputer() {
-        //Create player 
-        let player = this.ecs.createFromAssemblage({
-            components: ["player"],
-            data: {
-                player: {
-                    desc: "Computer"
-                }
-            }
-        })
-
-        //Create squad
-        let squad = this.ecs.createFromAssemblage({
-            components: ["squad"],
-            data: {
-                squad: {
-                    desc: "Computer gobelin squad !",
-                    number: 1,
-                    teamId: player,
-                    ai: "melee"
-                }
-            }
-        })
-
-        //Add soldier to squad
-        Util.getRectanglePositions(10, 3, 11, 8).forEach(pos => {
-            this.createActorEntity(player, squad, "Gobelin", pos.x, pos.y)
-        })
-    }
-
-
     update() {
 
-        const {
-            battle 
-        } = this.ecs.get("Battle")
+        /** @type {BattleComponent} */
+        const battle = this.ecs.get("Battle", "battle")
+
+        this.systems.draw.update()
+        this.systems.input.update()
+
+        if (battle.newTurn) {
+
+            battle.newTurn = false
+
+            this.systems.preparePathfinding.update()
+            this.systems.turn.update()
+
+            console.log(this.ecs.get("Battle", "battle", "actions"))
+
+
+        }
+
+        this.ui.redraw()
+        
+
+        return 
+
 
         if (battle.newTurn) {
 

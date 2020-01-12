@@ -4,38 +4,15 @@ import { PrepareBattleComponent } from "../../components/components"
  /** @type {ECS */
  let ecs
 
- /** @type {Phaser.Scene} */
- let scene
-
-/**
- * @typedef DataUI
- * @type {DataUI}
- * @property {number} placingSquadId
- * @property {squad[]} squads
- * @property {boolean} battleReady
- * @property {boolean} canConfirm
- */
-const data = {
-    placingSquadId: undefined,
-    battleReady: false,
-    canConfirm: false
-}
-
-
-/** @type {PrepareBattleComponent} */
+ /** @type {PrepareBattleComponent} */
 let prepareBattle 
-
 
 const PrepareBattleUI = {
 
-    setECS(ecsParam) {
+    init(ecsParam) {
         ecs = ecsParam
 
         prepareBattle = ecs.get("PrepareBattle", "prepareBattle")
-    },
-
-    setScene(sceneParam) {
-        scene = sceneParam
     },
 
     /**
@@ -43,48 +20,29 @@ const PrepareBattleUI = {
      */
     onConfirmButtonClick: (squad) => {
 
-        data.placingSquadId = undefined
-        data.canConfirm = false
-        data.battleReady = true
-        data.ecs.set(true, squad.squadId, "squad", "placed")
+        prepareBattle.placingSquadId = undefined
+        prepareBattle.canConfirm = false
+        prepareBattle.battleReady = true
 
-        m.redraw()
     },
 
 
     onToBattleClick: () => {
-        ecs.scene.start("Battle")
+        ecs.scene.scene.start("Battle")
     },
 
     onPlaceButtonClick: (squadId) => {
         prepareBattle.placingSquadId = squadId
-        
-        m.redraw()  
     },
 
-    setCanConfirm: (confirm) => {
-        data.canConfirm = confirm
-        m.redraw()  
-    },
-
-    getPlacingSquadId: () => {
-        return data.placingSquadId
-    },
-
-    confirmButtonClass: (squad) => {
-        let elClass = []
-
-        if (data.placingSquadId !== squad.squadId) {
-            elClass.push("hidden")
-        }
-        if (!data.canConfirm) {
-            elClass.push("pure-button-disabled")
-        }
-        return elClass.join(" ")
+    redraw() {
+        m.redraw()
     },
 
     view: (vnode) => {
+
         return m(".right-panel", [
+            
             m("h2", "Squads"),
 
             //Title for placing squad, canceling and validating
@@ -98,15 +56,31 @@ const PrepareBattleUI = {
                 const squad = ecs.get(squadId, "squad")
                 const units = ecs.getSquadUnits(squadId)
 
+
+                let confirmClass = ""
+
+                if (prepareBattle.placingSquadId === squadId) {
+                    if (!prepareBattle.canConfirm) {
+                        confirmClass = "pure-button-disabled"
+                    }
+                }
+                else {
+                    confirmClass = "hidden"
+                }
+
                 return m("p", [
                     m("span", squad.desc + " (" + units.length + " units)"),
                     m("br"),
+
+                    //Place squad button :
                     m("button.pure-button", {
                         class: prepareBattle.placingSquadId !== undefined ? "pure-button-disabled" : "",
                         onclick: () => PrepareBattleUI.onPlaceButtonClick(squadId)
                     }, "Place"),
+
+                    //Confirm place button :
                     m("button.pure-button", {
-                        class: PrepareBattleUI.confirmButtonClass(squad),
+                        class: confirmClass,
                         onclick: () => PrepareBattleUI.onConfirmButtonClick(squad)
                     }, "Confirm")
                 ])
@@ -114,7 +88,7 @@ const PrepareBattleUI = {
 
             m("div", [
                 m("button.pure-button", {
-                    class: data.battleReady ? "" : "pure-button-disabled",
+                    class: prepareBattle.battleReady ? "" : "pure-button-disabled",
                     onclick: () => PrepareBattleUI.onToBattleClick()
                 }, "To battle !")
             ])

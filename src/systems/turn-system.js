@@ -1,7 +1,7 @@
 import ECSHelper from "../lib/ecs-helper"
 import MessageHelper from "../lib/message-helper"
 
-class MovementSystem {
+class TurnSystem {
 
     /**
      * 
@@ -70,28 +70,25 @@ class MovementSystem {
     }
 
     update() {
-        let entities = this.ecs.searchEntities(["actor"])
 
-        entities.forEach(entityId => {
-            const actor = this.ecs.get(entityId, "actor")
+        this.ecs.actors
+            .map(id => this.ecs.get(id, "actor"))
+            .filter(actor => actor.health > 0)
+            .forEach(actor => {
 
-            if (actor.health <= 0) {
-                return
-            } 
+                const squad = this.ecs.get(actor.squadId, "squad")
 
-            const squad = this.ecs.get(actor.squadId, "squad")
+                switch(squad.ai) {
+                    case "melee":
+                        this.moveMelee(actor._id)
+                        break
 
-            switch(squad.ai) {
-                case "melee":
-                    this.moveMelee(entityId)
-                    break
-
-                case "ranged":
-                    this.moveRanged(entityId)    
-                    break
-            }
-        })
+                    case "ranged":
+                        this.moveRanged(actor._id)    
+                        break
+                }
+            })
     }
 }
 
-export default MovementSystem
+export default TurnSystem

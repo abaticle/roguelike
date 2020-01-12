@@ -70,7 +70,7 @@ export const ActorComponent = {
  */
 export const DisplayComponent = {
     name: "display",
-    sprite: undefined,
+    //sprite: undefined,
     container: undefined,
     selectorVisible: false,
     draw: false,
@@ -87,25 +87,41 @@ export const GameComponent = {
     scene: undefined
 }
 
+/** 
+ * @typedef BattleComponent
+ * @property {string} name
+ * @property {boolean} newTurn
+ * @property {number} speed
+ * @property {number} turn
+ * @property {Action[]} actions
+ * @property {undefined|number} selectedUnit
+ * @property {undefined|number} selectedSquad
+ */
 export const BattleComponent = {
     name: "battle",
     newTurn: false,
-    scene: undefined,
-    ui: undefined,
     speed: 1,
     turn: 0,
-    actions: []
+    actions: [],
+    selectedUnit: undefined,
+    selectedSquad: undefined
 }
 
 /**
  * @typedef PrepareBattleComponent
  * @property {undefined|number} placingSquadId
+ * @property {Position} from
+ * @property {Position} to
+ * @property {boolean} canConfirm
+ * @property {boolean} battleReady
  */
 export const PrepareBattleComponent = {
     name: "prepareBattle",
     placingSquadId: undefined,
     from: undefined,
-    to: undefined
+    to: undefined,
+    canConfirm: false,
+    battleReady: false
 }
 
 /**

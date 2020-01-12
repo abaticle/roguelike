@@ -1,6 +1,12 @@
 import PF from "pathfinding"
+import ECSHelper from "../lib/ecs-helper"
 
 class PreparePathfindingSystem {
+
+    /**
+     * 
+     * @param {ECSHelper} ecs 
+     */
     constructor(ecs) {
         this.ecs = ecs
     }
@@ -8,7 +14,7 @@ class PreparePathfindingSystem {
     update() {
 
         //Initiate pathfinding grid
-        const map = this.ecs.get("Battle", "map")
+        const map = this.ecs.map
 
         map.grid = new PF.Grid(map.width, map.height)
 
@@ -18,13 +24,11 @@ class PreparePathfindingSystem {
 
 
         //Set entities positions as not walkables
-        const actors = this.ecs.searchEntities(["position", "actor"])
-
-        actors.forEach(entityId => {
-            const position = this.ecs.get(entityId, "position")
-
-            map.grid.setWalkableAt(position.x, position.y, false)
-        });        
+        this.ecs.actors
+            .map(id => this.ecs.get(id, "position"))        
+            .forEach(position => {
+                map.grid.setWalkableAt(position.x, position.y, false)
+            });        
     }
 }
 

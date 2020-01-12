@@ -71,18 +71,15 @@ class ECSHelper extends ECS {
     }
     
     /**
-     * @returns {MapComponent}
-     */
-    getCurrentMap() {
-        //const entityId = this.searchEntities("map")[0]
-        return this.get(this.map, "map")
-    }
-
-    /**
      * 
      * @param {position} position 
+     * @param {string} color
      */
-    drawSquare(scene, position, color = Config.COLOR_SELECTION) {
+    drawSquare(position, color = Config.COLOR_SELECTION) {
+
+        const {
+            scene
+        } = this
 
         return scene.add
             .rectangle(position.x, position.y, Config.TILE_SIZE, Config.TILE_SIZE)
@@ -91,9 +88,18 @@ class ECSHelper extends ECS {
     }
 
 
-
+    /** 
+     * @returns {Phaser.Scene} Current scene
+     */
     get scene() {
         return this.get("Game", "game", "scene")
+    }
+
+    /** 
+     * @returns {string} Current scene key
+     */
+    get sceneKey() {
+        return this.scene.key
     }
 
 
@@ -108,14 +114,28 @@ class ECSHelper extends ECS {
             scene
         } = this
 
-        if (display.draw) {
+        if (display.draw) {            
 
             let {
                 x,
                 y
             } = Utils.convertToPixelPosition(position)
 
-            if (display.container) {
+            const checkContainer = (container) => {
+                if (container === undefined) {
+                    return false
+                }
+                if (container.scene === undefined) {
+                    return false
+                }
+                if (container.scene.key !== this.sceneKey) {
+                    return false
+                }
+                return true
+            }
+
+            if (checkContainer(display.container)) {
+                display.container.visible = true
                 display.container.x = x 
                 display.container.y = y
             }
@@ -129,31 +149,12 @@ class ECSHelper extends ECS {
 
         else {
             if (display.container) {
-                display.container.destroy()            
+                display.container.visible = false            
             }
         }
 
 
           
-    }
-
-
-    /**
-     * Draw a map in a scene
-     * @param {Phaser.Scene} scene 
-     * @param {MapComponent} map 
-     */
-    drawMapOld(scene, map) {
-
-        map.tilemap = scene.make.tilemap({
-            data: map.layout,
-            tileWidth: 32,
-            tileHeight: 32
-        });        
-        
-        const tiles = map.tilemap.addTilesetImage("ground1");
-        
-        map.tilemap.createStaticLayer(0, tiles, 0, 0);
     }
 
     drawMapEntity() {
@@ -163,8 +164,19 @@ class ECSHelper extends ECS {
             scene
         } = this
 
-        if (map.tilemap === undefined) {
+        let drawMap = false
 
+        if (map.tilemap === undefined) {
+            drawMap = true
+        }
+
+        else {
+            if (map.tilemap.scene.key !== this.sceneKey) {
+                drawMap = true
+            }
+        }
+
+        if (drawMap) {
             map.tilemap = scene.make.tilemap({
                 data: map.layout,
                 tileWidth: 32,
@@ -333,13 +345,11 @@ class ECSHelper extends ECS {
      */
     findPath(xFrom, yFrom, xTo, yTo) {
         
-        const map = this.getCurrentMap()
-
-        map.grid.setWalkableAt(xTo, yTo, true)
+        this.map.grid.setWalkableAt(xTo, yTo, true)
         
-        let path = map.finder.findPath(xFrom, yFrom, xTo, yTo, map.grid.clone())
+        let path = this.map.finder.findPath(xFrom, yFrom, xTo, yTo, this.map.grid.clone())
         
-        map.grid.setWalkableAt(xTo, yTo, false)
+        this.map.grid.setWalkableAt(xTo, yTo, false)
 
         return path
     }
@@ -352,9 +362,7 @@ class ECSHelper extends ECS {
      * @param {boolean} walkable Walkable or not
      */
     setWalkable(x, y, walkable) {
-        const map = this.getCurrentMap()
-
-        map.grid.setWalkableAt(x, y, walkable)
+        this.map.grid.setWalkableAt(x, y, walkable)
     }
 
 
@@ -364,9 +372,7 @@ class ECSHelper extends ECS {
      * @param {number} y Y Position
      */
     getWalkable(x, y) {
-        const map = this.getCurrentMap()
-        
-        return map.grid.isWalkableAt(x, y)
+        return this.map.grid.isWalkableAt(x, y)
     }
 
     /**
@@ -426,23 +432,6 @@ class ECSHelper extends ECS {
         }
     }
 
-
-    /**
-     * Get map width
-     * @returns {number} Get map width
-     */
-    getCurrentMapWidth() {
-        return this.get(this.getCurrentMap(), "map", "width")
-    }
-
-    /**
-     * Get map height
-     * @returns {number} Get map height
-     */
-    getCurrentMapHeight() {
-        return this.get(this.getCurrentMap(), "map", "height")
-    }
-
     /**
      * Get possible walkables position around entity
      * @param {number} entityId Entity id
@@ -458,8 +447,8 @@ class ECSHelper extends ECS {
 
                 if (x !== position.x || y !== position.y) {
 
-                    if (x >= 0 && x < this.getCurrentMap().width) {
-                        if (y >= 0 && y < this.getCurrentMap().height) {
+                    if (x >= 0 && x < this.map.width) {
+                        if (y >= 0 && y < this.map.height) {
 
                             positions.push({
                                 x,

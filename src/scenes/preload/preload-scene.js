@@ -150,11 +150,11 @@ export default class PreloadScene extends SceneBase {
 
         const factory = new EntityFactory(this.ecs)
 
-        for (let i = 0; i < 3; i++) {
+        for (let i = 0; i < 15; i++) {
             
             factory.createActor({
                 teamId: player,
-                squadId: squad,
+                squadId: i < 10 ? squad : squad2,
                 x: 0,
                 y: 0,
                 draw: false

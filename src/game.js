@@ -14,7 +14,7 @@ import Components from "./components/components"
 import Animation from "./systems/animation-system"
 import Draw from "./systems/draw-system"
 import Input from "./systems/input-system"
-import Movement from "./systems/movement-system"
+import Turn from "./systems/turn-system"
 import PreparePathfinding from "./systems/prepare-pathfinding"
 import TeamCounter from "./systems/team-counter-system"
 
@@ -40,7 +40,7 @@ export default class Game extends Phaser.Game {
             animation: new Animation(ecs),
             draw: new Draw(ecs),
             input: new Input(ecs),
-            movement: new Movement(ecs),
+            turn: new Turn(ecs),
             preparePathfinding: new PreparePathfinding(ecs),
             teamCounter: new TeamCounter(ecs)
         }

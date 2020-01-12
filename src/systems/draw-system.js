@@ -11,22 +11,37 @@ export default class DrawSystem {
     }
 
 
-    drawMap(scene) {
-
+    drawMap() {
         this.ecs.drawMapEntity()
-
     }
 
-    drawActors(scene) {
-
+    drawActors() {
         this.ecs.actors.forEach(id => this.ecs.drawPositionEntity(id))
+    }
 
+    drawError() {
+       // this.ecs.drawSquare()
     }
 
     update() {
 
-        this.drawMap()
-        this.drawActors()
+        switch(this.ecs.sceneKey) {
+
+            case "PrepareBattle":
+                this.drawMap()
+                this.drawActors()
+                this.drawError()
+                break
+
+            case "Battle":
+                this.drawMap()
+                this.drawActors()
+                break
+                
+
+        }
+
+
         
     }
 }

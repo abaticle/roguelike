@@ -1,3 +1,6 @@
+import ECS from "./../lib/ecs-helper"
+
+
 class TeamCounterSystem {
 
     /**
@@ -9,27 +12,21 @@ class TeamCounterSystem {
     }
 
     update() {
-        const players = this.ecs.searchEntities("player")
-
 
         //Update player unit count
-        players.forEach(playerId => {
+        this.ecs.teams
+            .map(id => this.ecs.get(id, "team"))
+            .forEach(team => {
 
-            const player = this.ecs.get(playerId, "player")
+                team.count = 0
 
-            player.count = 0
-            
-            this.ecs.searchEntities("actor").forEach(actorId => {
-                let actor = this.ecs.get(actorId, "actor")
+                this.ecs.actors
+                    .map(id => this.get(id, "actor"))
+                    .filter(actor => actor.teamId === team && actor.health > 0)
+                    .length
+                
 
-                if (actor.teamId === playerId) {
-                    if (actor.health > 0) {
-                        player.count++
-                    }
-                }
-            })
-
-        });
+            });
     }
 }
 
