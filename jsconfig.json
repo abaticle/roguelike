@@ -1,12 +1,16 @@
 {
   "include": [
-    "src/types.js"
-  ],
+    "src/types.js",
+    "src/**/*.js"
+  ], 
   "compilerOptions": {
-    "checkJs": true
+    "target": "es5",
+    "checkJs": true,
+    "experimentalDecorators": true,
+    "lib": ["es2015", "es2017.object", "dom", "es2017"]
   },
   "exclude": [
-    "node_modules",
+    "node_modules", 
     "**/node_modules/*"
   ]
 }

@@ -14,6 +14,7 @@ export default class SceneBase extends Phaser.Scene {
     constructor({key, ecs, systems, ui = {}}) {
         super(key)
 
+        /** @type {string} key */
         this.key = key
         this.ecs = ecs 
         this.systems = systems

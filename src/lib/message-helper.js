@@ -15,7 +15,7 @@ export default class MessageHelper {
     
     /**
      * 
-     * @param {MoveMessage|AttackMeleeMessage|AttackRangedMessage} message 
+     * @param {MoveMessage|AttackMeleeMessage|AttackRangedMessage|DieMessage} message 
      */
     pushMessage(message) {
         const actions = this.ecs.get("Battle", "battle", "actions")
@@ -29,7 +29,7 @@ export default class MessageHelper {
     /**
      * Move an entity
      * @param {*} entityId Entity to move
-     * @param {Position} nextPosition Next position, with X/Y values 
+     * @param {MapPosition} nextPosition Next position, with X/Y values 
      */
     createMoveMessage(entityId, nextPosition) {
                 
@@ -43,7 +43,7 @@ export default class MessageHelper {
         position.x = nextPosition.x
         position.y = nextPosition.y
 
-
+        //TODO:To remove, only for testings
         this.ecs.searchEntities("position").forEach(e => {
             if (e !== entityId) {
                 const pos = this.ecs.get(e, "position")

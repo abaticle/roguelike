@@ -1,38 +1,18 @@
-import PF from "pathfinding"
-
-/**
- * @typedef {object} ActorComponent Player component
- * @property {string} name Component name
- * @property {string} desc Player description
- * @property {boolean} controled Controled by user ?
- * @property {number} count Number of units
- */
+/**@type {TeamComponent} */
 export const TeamComponent = {
     name: "team",
     desc: "",
     count: 0
 }
 
-/**
- * @typedef {object} PositionComponent Position component
- * @property {number} x X Position
- * @property {number} y Y Position
- */
+/** @type {PositionComponent} */
 export const PositionComponent = {
     name: "position",
     x: 0,
     y: 0
 }
 
-/**
- * @typedef {object} SquadComponent Squad component
- * @property {string} name Component name
- * @property {string} desc Actor description
- * @property {boolean} placed 
- * @property {number} number Squad number
- * @property {number} teamId Squad team entity id
- * @property {string} ai Squad AI
- */
+/** @type {SquadComponent} */
 export const SquadComponent = {
     name: "squad",
     desc: "",
@@ -42,14 +22,7 @@ export const SquadComponent = {
     ai: "melee"
 }
 
-/**
- * @typedef {object} ActorComponent Actor component
- * @property {string} name Component name
- * @property {string} desc Actor description
- * @property {number} health Actor health
- * @property {number} teamId Actor team entity id
- * @property {number} squadId Actor squad entity id
- */
+/** @type {ActorComponent} */
 export const ActorComponent = {
     name: "actor",
     desc: "Actor description", 
@@ -59,44 +32,23 @@ export const ActorComponent = {
     squadId: undefined
 } 
 
-/**
- * @typedef {object} DisplayComponent Actor component
- * @property {string} name Component name
- * @property {Phaser.GameObjects.Sprite} sprite Phaser sprite
- * @property {Phaser.GameObjects.Container} container Phaser container
- * @property {boolean} selectorVisible Selector visible ?
- * @property {boolean} draw Draw component ?
- * @property {number} frame Frame id
- */
+/** @type {DisplayComponent} */
 export const DisplayComponent = {
     name: "display",
-    //sprite: undefined,
     container: undefined,
     selectorVisible: false,
     draw: false,
     frame: 0
 }
 
-/**
- * @typedef {object} GameComponent Game component
- * @property {string} name Component name
- * @property {Phaser.Scene} scene Current Phaser scene
- */
+/** @type {GameComponent} */
 export const GameComponent = {
     name: "game",
     scene: undefined
 }
 
-/** 
- * @typedef BattleComponent
- * @property {string} name
- * @property {boolean} newTurn
- * @property {number} speed
- * @property {number} turn
- * @property {Action[]} actions
- * @property {undefined|number} selectedUnit
- * @property {undefined|number} selectedSquad
- */
+
+/** @type {BattleComponent} */
 export const BattleComponent = {
     name: "battle",
     newTurn: false,
@@ -107,14 +59,7 @@ export const BattleComponent = {
     selectedSquad: undefined
 }
 
-/**
- * @typedef PrepareBattleComponent
- * @property {undefined|number} placingSquadId
- * @property {Position} from
- * @property {Position} to
- * @property {boolean} canConfirm
- * @property {boolean} battleReady
- */
+/** @type {PrepareBattleComponent} */
 export const PrepareBattleComponent = {
     name: "prepareBattle",
     placingSquadId: undefined,
@@ -124,15 +69,7 @@ export const PrepareBattleComponent = {
     battleReady: false
 }
 
-/**
- * @typedef {object} MapComponent Map component
- * @property {number} width Map width
- * @property {number} height Map height
- * @property {number[]} layout Map layout
- * @property {Phaser.Tilemaps.Tilemap} tilemap Phaser tilemap
- * @property {PF.Grid} grid PathFinding Grid
- * @property {} finder 
- */
+/** @type {MapComponent} */
 export const MapComponent = {
     name: "map",
     width: 0,

@@ -1,4 +1,5 @@
 export default {
+    /** @type {number} */
     TILE_SIZE: 32,
     TILE_MIDLE_SIZE: 16,
     MOVE_DURATION: 50,

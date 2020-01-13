@@ -4,7 +4,10 @@ import _ from "lodash"
 export default class ECS {
 
     constructor() {
+
+        /** @type {number[]} Entity list */
         this.entities = []
+
         this.entitiesComponents = {}
         this.components = {}
         this._cache = {}
@@ -60,10 +63,10 @@ export default class ECS {
 
     /**
      * Create an entity from an assemblage
-     * @param {Object} assemblage
+     * @param {object} assemblage
      * @param {string[]} assemblage.components Component list
      * @param {string?} assemblage.alias Entity alias
-     * @param {Object} assemblage.data
+     * @param {object} assemblage.data
      * @returns {number} New entity id
      */
     createFromAssemblage(assemblage) {
@@ -138,7 +141,7 @@ export default class ECS {
 
     /**
      * Create new entity
-     * @param {string|string[]|undefined} components 
+     * @param {string|string[]|undefined=} components 
      * @returns {number} Newly generated entity id
      */
     createEntity(components) {
@@ -155,7 +158,7 @@ export default class ECS {
 
     /**
      * Register a new component 
-     * @param {object|object[]} component Component with a "name" property 
+     * @param {object|object[]} components Component with a "name" property 
      */
     registerComponent(components) {
 
@@ -177,9 +180,9 @@ export default class ECS {
     /**
      * Remove component(s) from an entity
      * @param {number|string} entityId Id or alias of an entity
-     * @param {string|string[]} componantNames Components to remove
+     * @param {string|string[]} componentNames Components to remove
      */
-    remove(entityId, componantNames) {
+    remove(entityId, componentNames) {
 
         componentNames = [].concat(componentNames)
 
@@ -190,7 +193,7 @@ export default class ECS {
             entityId = this.getAlias(entityId)
         }
 
-        componantNames.forEach(name => {
+        componentNames.forEach(name => {
             
             if (!this.existComponent(name)) {
                 throw new Error(`Component "${name}" doesn't exists`)
@@ -252,37 +255,11 @@ export default class ECS {
     }
 
     /**
-     * Remove component(s) from an entity
-     * @param {number} entityId 
-     * @param {string|string[]} componentNames 
-     */
-    remove(entityId, componentNames) {
-        componentNames = [].concat(componentNames)
-
-        //Check parameters
-        if (!this.entities.includes(entityId)) {
-            throw new Error(`Entity ${entityId} doesn't exists`)
-        }
-
-        componentNames.forEach(componentName => {
-            if (!this.existComponent(componentName)) {
-                throw new Error(`Component "${componentName}" doesn't exists`)
-            }
-
-            delete this.entitiesComponents[componentName][entityId]
-
-            this._cleanCache(componentName)
-        })
-
-        return this
-    }
-
-    /**
      * 
      * @param {any} value 
      * @param {number|string} entityId 
      * @param {string} componentName 
-     * @param {string} property 
+     * @param {string=} property 
      */
     set(value, entityId, componentName, property) {
 
@@ -368,8 +345,8 @@ export default class ECS {
     /**
      * Get an entity, component or value from component
      * @param {number|string} entityId Entity id or alias
-     * @param {string} componentName Component name
-     * @param {string} path Path in component
+     * @param {string=} componentName Component name
+     * @param {string=} path Path in component
      */
     get(entityId, componentName, path) {
 

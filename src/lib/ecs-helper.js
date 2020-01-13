@@ -2,12 +2,20 @@ import ECS from "./ecs"
 import Utils from "./../other/utils"
 import { MapComponent } from "../components/components"
 import Config from "../config"
+import SceneBase from "../scenes/scene-base"
 
 class ECSHelper extends ECS {
 
     constructor() {
         super()
     }   
+
+    /** 
+     * @returns {any[]}
+     */
+    get actions () {
+        return this.get("Battle", "battle", "actions")
+    }
 
     
     /**
@@ -72,8 +80,8 @@ class ECSHelper extends ECS {
     
     /**
      * 
-     * @param {position} position 
-     * @param {string} color
+     * @param {MapPosition} position 
+     * @param {number} color
      */
     drawSquare(position, color = Config.COLOR_SELECTION) {
 
@@ -89,7 +97,7 @@ class ECSHelper extends ECS {
 
 
     /** 
-     * @returns {Phaser.Scene} Current scene
+     * @returns {SceneBase} Current scene
      */
     get scene() {
         return this.get("Game", "game", "scene")
@@ -192,10 +200,10 @@ class ECSHelper extends ECS {
 
     /**
      * Get formation positions
-     * @param {position} from From
-     * @param {position} to To
-     * @param {position} size Number of units to place
-     * @returns {position[]} Positions
+     * @param {MapPosition} from From
+     * @param {MapPosition} to To
+     * @param {number} size Number of units to place
+     * @returns {MapPosition[]} Positions
      */
     getFormationPositions(from, to, size) {
 
@@ -249,14 +257,18 @@ class ECSHelper extends ECS {
     
     /**
      * Get world position from mouse
-     * @param {Object} position Mouse position
-     * @param {number} position.x Mouse x position
-     * @param {number} position.y Mouse y position
+     * @param {MousePosition} position Mouse position
+     * @returns {MapPosition} Map position
      */
     convertWorldPos(position) {
-        return {
+        /*let newPosition = {
             x: parseInt(position.x / Config.TILE_SIZE),
             y: parseInt(position.y / Config.TILE_SIZE) 
+        }*/
+
+        return {
+            x: Math.trunc(position.x / Config.TILE_SIZE),
+            y: Math.trunc(position.y / Config.TILE_SIZE) 
         }
     }
 
@@ -309,20 +321,6 @@ class ECSHelper extends ECS {
             return false
         })
     }
-
-    /**
-     * Get all units from squad
-     * @param {number} squadId Squad entity id
-     * @returns {number[]} Entities
-     */
-    getSquadUnits(squadId) {
-
-        return this
-            .searchEntities("actor")
-            .filter(entityId => this.get(entityId, "actor", "squadId") === squadId)
-
-    }
-
     
     /**
      * Get squad size
@@ -379,6 +377,7 @@ class ECSHelper extends ECS {
      * Get flee position toward an entity
      * @param {number} entityFromId 
      * @param {number} entityToId 
+     * @returns {MapPosition}
      */
     getOpositePositionTowardEntity(entityFromId, entityToId) {
         const positionFrom = this.get(entityFromId, "position")
@@ -435,7 +434,7 @@ class ECSHelper extends ECS {
     /**
      * Get possible walkables position around entity
      * @param {number} entityId Entity id
-     * @returns {Position[]} entityId 
+     * @returns {MapPosition[]} entityId 
      */
     getAroundPositions(entityId) {
         const position = this.get(entityId, "position")
