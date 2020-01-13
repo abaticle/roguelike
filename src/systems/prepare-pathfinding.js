@@ -19,9 +19,10 @@ class PreparePathfindingSystem {
         map.grid = new PF.Grid(map.width, map.height)
 
         map.finder = new PF.AStarFinder({
+            // @ts-ignore
             allowDiagonal: true
         })
-
+ 
 
         //Set entities positions as not walkables
         this.ecs.actors

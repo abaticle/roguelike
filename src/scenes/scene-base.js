@@ -1,6 +1,11 @@
 import ECS from "../lib/ecs-helper"
+
+// @ts-ignore
 import Phaser from "Phaser"
 
+/**
+ * Base Scene class
+ */
 export default class SceneBase extends Phaser.Scene {
 
     /**

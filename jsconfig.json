@@ -1,7 +1,7 @@
 {
   "include": [
-    "src/types.js",
-    "src/**/*.js"
+    //"src/types.js",
+    //"src/**/*.js"
   ], 
   "compilerOptions": {
     "target": "es5",

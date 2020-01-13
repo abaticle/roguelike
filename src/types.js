@@ -1,4 +1,8 @@
 
+/** 
+ * @typedef {number|undefined} EntityId Entity Id
+ */
+
 /**
  * @typedef {object} TeamComponent Team component
  * @property {string} name Component name
@@ -19,7 +23,7 @@
  * @property {string} desc Actor description
  * @property {boolean} placed 
  * @property {number} number Squad number
- * @property {number} teamId Squad team entity id
+ * @property {EntityId} teamId Squad team entity id
  * @property {string} ai Squad AI
  */
  
@@ -29,8 +33,8 @@
  * @property {string} desc Actor description
  * @property {number} health Actor health
  * @property {number} maxHealth Actor max health
- * @property {number} teamId Actor team entity id
- * @property {number} squadId Actor squad entity id
+ * @property {EntityId} teamId Actor team entity id
+ * @property {EntityId} squadId Actor squad entity id
  */
  
 /**
@@ -55,21 +59,22 @@
  * @property {number} speed Animation speed
  * @property {number} turn Current turn
  * @property {any} actions Actions list
- * @property {undefined|number} selectedUnit Selected unit id
- * @property {undefined|number} selectedSquad Selected unit id
+ * @property {EntityId} selectedUnit Selected unit id
+ * @property {EntityId} selectedSquad Selected unit id
  */
 
  
 /**
  * @typedef {object} PrepareBattleComponent Prepare battle scene component 
  * @property {string} name Component name
- * @property {undefined|number} placingSquadId Current squad beeing placed
- * @property {Position} from Mouse from posititon 
- * @property {Position} to Mouse to position
+ * @property {EntityId} placingSquadId Current squad beeing placed
+ * @property {MousePosition} from Mouse from posititon 
+ * @property {MousePosition} to Mouse to position
  * @property {boolean} canConfirm Squad formation can be confirmed ?
  * @property {boolean} battleReady Battle can be launched ? 
  */
- 
+
+ // @ts-ignore
 /**
  * @typedef {object} MapComponent Map component
  * @property {string} name Component name
@@ -77,8 +82,8 @@
  * @property {number} height Map height
  * @property {number[][]} layout Map layout
  * @property {Phaser.Tilemaps.Tilemap} tilemap Phaser tilemap
- * @property {PF.Grid} grid PathFinding Grid
- * @property {PF.Finder} finder 
+ * @property {PF.Grid} grid PathFinding Grid         
+ * @property {PF.Finder} finder PathFinding Finder
  */
 
  /**    
@@ -98,17 +103,34 @@
   * @property {string} type Message type : "move"
   * @property {number} entityId Moving entity
   * @property {MapPosition} nextPosition New position
-  * @property {string} Message description 
+  * @property {string} description Message description 
   */
  
   /**
   * @typedef {object} AttackMeleeMessage Melee attack message
+  * @property {string} type Message type : "attackMelee"
+  * @property {EntityId} from Attacking entity
+  * @property {EntityId} to Attacked entity
+  * @property {number} damages Damages done
+  * @property {string} description Message description 
   */
 
  /**
   * @typedef {object} AttackRangedMessage Ranged attack message
+  * @property {string} type Message type : "attackRanged"
+  * @property {EntityId} from Attacking entity
+  * @property {EntityId} to Attacked entity
+  * @property {number} damages Damages done
+  * @property {string} description Message description 
   */ 
  
   /**
   * @typedef {object} DieMessage Die message
+  * @property {string} type Message type : "die"
+  * @property {EntityId} entityId Dieing entity id
+  * @property {EntityId} killedBy Killer entity id
+  * @property {number} damages Damages done
+  * @property {string} description Message description 
   */
+
+  /** @typedef {DieMessage|AttackRangedMessage|AttackMeleeMessage|MoveMessage} Message */

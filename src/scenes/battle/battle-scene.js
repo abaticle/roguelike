@@ -81,37 +81,14 @@ export default class BattleScene extends SceneBase {
         }
     }
 
-    checkEnd() {
-        const players = this.ecs.searchEntities("team")
-
-        players.forEach(playerId => {
-            const player = this.ecs.get(playerId, "player")
-
-            if (player.count === 0) {
-                switch(player.desc) {
-                    case "player":
-                        this.scene.start("EndBattleScene", {
-                            won: false
-                        })
-                        break;
-
-                    case "computer":
-                        this.scene.start("EndBattleScene", {
-                            won: true
-                        })
-                        break
-                } 
-            }
-        })
-    }
-
-    update() {
+    update(dt) {
 
         /** @type {BattleComponent} */
         const battle = this.ecs.get("Battle", "battle")
 
         this.systems.draw.update()
         this.systems.input.update()
+        this.systems.animation.update(dt)
 
         if (battle.newTurn) {
 

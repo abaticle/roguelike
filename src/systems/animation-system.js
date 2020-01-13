@@ -1,172 +1,77 @@
-import ECS from "./../lib/ecs"
-import Utils from "./../other/utils"
-import config from "../config"
+import ECSHelper from "../lib/ecs-helper"
 
-class AnimationSystem {
+export default class AnimationSystem {
 
     /**
-     * Class constructor
-     * @param {ECS} ecs 
+     * 
+     * @param {ECSHelper} ecs 
      */
     constructor(ecs) {
         this.ecs = ecs
-        this.timeline = undefined
     }
 
-    getScene() {
-        return this.ecs.get("Battle", "battle", "scene")
-    }    
 
     /**
-     * Remove first message
+     * Move animation
+     * @param {number} dt 
+     * @param {MoveMessage} message 
      */
-    shiftMessage() {
-        const actions = this.ecs.get("Battle", "battle", "actions")
+    animateMove(dt, message) {
 
-        actions.shift()
-    }
 
-    /**
-     * Animate movement
-     * @param {MoveMessage} message Move message 
-     */
-    animateMove(message) {
+        let {
+            entityId,
+            nextPosition
+        } = message
         
-        const {
-            display,
-            position
-        } = this.ecs.get(message.entityId)        
+        let {
+            position, 
+            display
+        } = this.ecs.get(entityId)
 
-        this.timeline.add({
-            targets: display.container,
-            x: (config.TILE_SIZE * position.x) + config.TILE_MIDLE_SIZE,
-            y: (config.TILE_SIZE * position.y) + config.TILE_MIDLE_SIZE,
-            ease: 'Power1',
-            duration: config.MOVE_DURATION,
-            onStart: () => {},
-            onComplete: () => {}
-        });
+        if (position.x === nextPosition.x && position.y === nextPosition.y) {
 
-
-    }
-
-    /**
-     * Animate melee movements
-     * @param {{type: string, from: number, to: number, damages: number}} message Attack melee message
-     */
-    animateMelee(message) {
-        
-        const {
-            display, 
-            position
-        } = this.ecs.get(message.from)
-
-        const toPosition = this.ecs.get(message.to, "position")
-        const targetPosition = Utils.getPositionBetweenTwoPoints(position.x, position.y, toPosition.x, toPosition.y)
-
-        this.timeline.add({
-            targets: display.container,
-            x: (config.TILE_SIZE * targetPosition.x) + config.TILE_MIDLE_SIZE,
-            y: (config.TILE_SIZE * targetPosition.y) + config.TILE_MIDLE_SIZE,
-            duration: config.MELEE_ATTACK_DURATION,
-            yoyo: true
-        })
-
-    }
-
-
-    /**
-     * Animate ranged attack
-     * @param {{type: string, from: number, to: number, damages: number}} message Animation message
-     */
-    animateRanged(message) {
-
-        const fromPosition = this.ecs.get(message.from, "position")
-        const toPosition = this.ecs.get(message.to, "position")
-
-        const arrowSprite = this.getScene().make.sprite({
-            x: (fromPosition.x * 32) + 16,
-            y: (fromPosition.y * 32) + 16,
-            key: "arrow1"
-        })
-
-        this.timeline.add({
-            targets: arrowSprite,
-            x: (32 * toPosition.x) + 16,
-            y: (32 * toPosition.y) + 16,
-            ease: 'Power1',
-            duration: config.RANGED_ATTACK_DURATION,
-            onStart: () => {},
-            onComplete: () => {
-                arrowSprite.destroy()
-            }
-        });
-
-
-
-    }
-
-    /**
-     * Animate die
-     * @param {action.entityId} action Dieing entity
-     * @param {{type: string, entityId: number, killedBy: number, damages: number}} message Die message
-     */    
-    animateDie(message) {
-
-        const {
-            display 
-        } = this.ecs.get(message.entityId)        
-
-        //display.sprite.destroy()
-
-        this.timeline.add({
-            targets: display.container,
-            ease: 'Power1',
-            duration: config.DIE_DURATION,
-            alpha: 0,
-            onStart: () => {},
-            onComplete: () => {
-                display.container.destroy()
-            }
-        });
-    }
-
-    handleAction(action) {
-        switch (action.type) {
-            case "move":
-                this.animateMove(action)
-                break
-
-            case "attackMelee":
-                this.animateMelee(action)
-                break
-
-            case "attackRanged":
-                this.animateRanged(action)
-                break
-
-            case "die":
-                this.animateDie(action)
-                break
         }
+
+        else {
+            
+        }
+
     }
 
-    update() {
+    /**
+     * 
+     * @param {number} dt 
+     */
+    update(dt) {
 
-        let actions = this.ecs.get("Battle", "battle", "actions")
+        this.ecs.actions.forEach(action => {
 
-        this.timeline = this.getScene().tweens.createTimeline({
-            onComplete: () => {
-                console.log("end")
+            switch(action.type) {
+                case "die":
+                    break
+
+                case "attackMelee":
+                    break
+
+                case "move":
+                    this.animateMove(dt, action)
+                    break
+
+                case "attackRanged":
+                    break
             }
-        });
 
-        while(actions.length > 0) {            
-            this.handleAction(actions.shift())
-        }        
+        })
 
-        this.timeline.play()
+
+        this.ecs.actors.map(id => this.ecs.get(id)).forEach(data => {
+
+            const {
+                position 
+            } = data
+
+            
+        })
     }
 }
-
-export default AnimationSystem

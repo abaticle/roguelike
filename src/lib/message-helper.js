@@ -40,8 +40,8 @@ export default class MessageHelper {
 
         this.ecs.setWalkable(position.x, position.y, true)
 
-        position.x = nextPosition.x
-        position.y = nextPosition.y
+        //position.x = nextPosition.x
+        //position.y = nextPosition.y
 
         //TODO:To remove, only for testings
         this.ecs.searchEntities("position").forEach(e => {
@@ -76,15 +76,13 @@ export default class MessageHelper {
         let damages = Utils.randomInteger(4, 8)
 
 
-        const description = `Entity ${entityId} did ${damages} melee damages to ${targetEntityId}`
-
         //Push melee attack message
         this.pushMessage({
             type: "attackMelee",
             from: entityId,
             to: targetEntityId,
             damages: damages,
-            description
+            description: `Entity ${entityId} did ${damages} melee damages to ${targetEntityId}`
         })
         
         //Remove health from target entity, and send die message if dead
@@ -94,14 +92,12 @@ export default class MessageHelper {
 
         if (targetActor.health <= 0) {
 
-            const descriptionDie = `Entity ${targetEntityId} died !`
-
             this.pushMessage({
                 type: "die",
                 entityId: targetEntityId,
                 killedBy: entityId,
                 damages: damages,
-                description: descriptionDie
+                description: `Entity ${targetEntityId} died !`
             })            
 
         }
@@ -117,15 +113,13 @@ export default class MessageHelper {
         //TODO:Calculate damages from strength for ranged attack ?
         let damages = Utils.randomInteger(2, 6)
 
-        const description = `Entity ${entityId} did ${damages} ranged damages to ${targetEntityId}`
-
         //Push ranged attack message
         this.pushMessage({
             type: "attackRanged",
             from: entityId,
             to: targetEntityId,
             damages: damages,
-            description
+            description:  `Entity ${entityId} did ${damages} ranged damages to ${targetEntityId}`
         })
 
         //Remove health from target entity, and send die message if dead
@@ -135,14 +129,12 @@ export default class MessageHelper {
 
         if (targetActor.health <= 0) {
 
-            const descriptionDie = `Entity ${targetEntityId} died !`
-
             this.pushMessage({
                 type: "die",
                 entityId: targetEntityId,
                 killedBy: entityId,
                 damages: damages,
-                description: descriptionDie
+                description: `Entity ${targetEntityId} died !`
             })            
 
         }        

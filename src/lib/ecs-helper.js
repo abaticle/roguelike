@@ -11,7 +11,7 @@ class ECSHelper extends ECS {
     }   
 
     /** 
-     * @returns {any[]}
+     * @returns {Message[]}
      */
     get actions () {
         return this.get("Battle", "battle", "actions")
@@ -97,7 +97,7 @@ class ECSHelper extends ECS {
 
 
     /** 
-     * @returns {SceneBase} Current scene
+     * @returns {Phaser.Scene} Current scene
      */
     get scene() {
         return this.get("Game", "game", "scene")
@@ -107,6 +107,7 @@ class ECSHelper extends ECS {
      * @returns {string} Current scene key
      */
     get sceneKey() {
+        // @ts-ignore
         return this.scene.key
     }
 
@@ -179,6 +180,7 @@ class ECSHelper extends ECS {
         }
 
         else {
+            // @ts-ignore
             if (map.tilemap.scene.key !== this.sceneKey) {
                 drawMap = true
             }
@@ -464,13 +466,13 @@ class ECSHelper extends ECS {
 
     /**
      * Get enemy entities with health > 0
-     * @param {number} friendlyEntityId Friendly unit id
-     * @returns {number[]} Enemy entities
+     * @param {EntityId} friendlyEntityId Friendly unit id
+     * @returns {EntityId[]} Enemy entities
      */
     getEnemies(friendlyEntityId) {
         const friendlyActor = this.get(friendlyEntityId, "actor")
 
-        return this.searchEntities("actor").filter(entityId => {
+        return this.actors.filter(entityId => {
             const actor = this.get(entityId, "actor")
 
             if (actor.health > 0 && actor.teamId !== friendlyActor.teamId) {
@@ -486,9 +488,9 @@ class ECSHelper extends ECS {
 
     /**
      * Get closest entity enemy
-     * @param {number} friendlyEntityId Entity to search from 
-     * @param {number} range Maximum range
-     * @returns {number} Closest enemy
+     * @param {EntityId} friendlyEntityId Entity to search from 
+     * @param {number=} [range=9999] range Maximum range
+     * @returns {EntityId} Closest enemy
      */
     getClosestEnemyUnit(friendlyEntityId, range = 9999) {
 
