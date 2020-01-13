@@ -72,8 +72,8 @@ class TurnSystem {
     update() {
 
         this.ecs.actors
-            .map(id => this.ecs.get(id, "actor"))
-            .filter(actor => actor.health > 0)
+            .map(id => this.ecs.get(id, "actor"))   
+            .filter(actor => actor.health > 0 && actor.inBattle)
             .forEach(actor => {
 
                 const squad = this.ecs.get(actor.squadId, "squad")

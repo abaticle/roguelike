@@ -35,6 +35,7 @@
  * @property {number} maxHealth Actor max health
  * @property {EntityId} teamId Actor team entity id
  * @property {EntityId} squadId Actor squad entity id
+ * @property {boolean} inBattle In battle ?
  */
  
 /**
@@ -58,9 +59,10 @@
  * @property {boolean} newTurn New turn ?
  * @property {number} speed Animation speed
  * @property {number} turn Current turn
- * @property {any} actions Actions list
+ * @property {Message[]} actions Actions list
  * @property {EntityId} selectedUnit Selected unit id
  * @property {EntityId} selectedSquad Selected unit id
+ * @property {boolean} drawn Unit already drawn ?
  */
 
  

@@ -3,6 +3,7 @@ import Utils from "./../other/utils"
 import { MapComponent } from "../components/components"
 import Config from "../config"
 import SceneBase from "../scenes/scene-base"
+import config from "../config"
 
 class ECSHelper extends ECS {
 
@@ -272,6 +273,20 @@ class ECSHelper extends ECS {
             x: Math.trunc(position.x / Config.TILE_SIZE),
             y: Math.trunc(position.y / Config.TILE_SIZE) 
         }
+    }
+
+    /**
+     * 
+     * @param {MapPosition} position 
+     * @returns {MousePosition} 
+     */
+    convertMapPos(position) {
+
+        return {
+            x: (position.x * Config.TILE_SIZE) + Config.TILE_MIDLE_SIZE,
+            y: (position.y * Config.TILE_SIZE) + Config.TILE_MIDLE_SIZE
+        }
+
     }
 
 

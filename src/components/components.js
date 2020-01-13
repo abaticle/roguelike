@@ -29,7 +29,8 @@ export const ActorComponent = {
     health: 20,
     maxHealth: 20,
     teamId: undefined,
-    squadId: undefined
+    squadId: undefined,
+    inBattle: false
 } 
 
 /** @type {DisplayComponent} */
@@ -56,7 +57,8 @@ export const BattleComponent = {
     turn: 0,
     actions: [],
     selectedUnit: undefined,
-    selectedSquad: undefined
+    selectedSquad: undefined,
+    drawn: false
 }
 
 /** @type {PrepareBattleComponent} */

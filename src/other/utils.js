@@ -2,6 +2,31 @@ import config from "../config";
 
 export default class Utils {
     
+    /** 
+     * @property {MousePosition} pointFrom
+     * @property {MousePosition} pointTo
+     * @property {number} speed
+     */
+    static moveToward(pointFrom, pointTo, speed) {
+
+        let tx = pointTo.x - pointFrom.x;
+        let ty = pointTo.y - pointFrom.y;
+
+        let dist = Math.sqrt(tx * tx + ty * ty);
+
+        if (dist > speed) {
+            dist = speed
+        }
+
+        let velX = (tx / dist) * speed;
+        let velY = (ty / dist) * speed;
+
+        return {
+            x: pointFrom.x + velX,
+            y: pointFrom.y + velY
+        }
+    }
+
 
     /**
      * Generate random integer between min and max (inclusives)

@@ -1,7 +1,8 @@
-import ECS from "./../../lib/ecs-helper"
+import ECSHelper from "./../../lib/ecs-helper"
 import { PrepareBattleComponent } from "../../components/components"
+import m from "mithril"
 
- /** @type {ECS */
+ /** @type {ECSHelper} */
  let ecs
 
  /** @type {PrepareBattleComponent} */
@@ -9,20 +10,28 @@ let prepareBattle
 
 const PrepareBattleUI = {
 
+    /**
+     * 
+     * @param {ECSHelper} ecsParam 
+     */
     init(ecsParam) {
         ecs = ecsParam
 
         prepareBattle = ecs.get("PrepareBattle", "prepareBattle")
     },
 
-    /**
-     * @param {squad} squad
+    /** 
+     * @param {EntityId} Squad id
      */
-    onConfirmButtonClick: (squad) => {
+    onConfirmButtonClick: (squadId) => {
 
         prepareBattle.placingSquadId = undefined
         prepareBattle.canConfirm = false
         prepareBattle.battleReady = true
+
+        /*ecs.getSquadUnits(squadId).map(id => ecs.get(id, "actor")).forEach(actor => {
+            actor.inBattle = true
+        })*/
 
     },
 
@@ -81,7 +90,7 @@ const PrepareBattleUI = {
                     //Confirm place button :
                     m("button.pure-button", {
                         class: confirmClass,
-                        onclick: () => PrepareBattleUI.onConfirmButtonClick(squad)
+                        onclick: () => PrepareBattleUI.onConfirmButtonClick(squadId)
                     }, "Confirm")
                 ])
             })),

@@ -65,9 +65,9 @@ export default class ECS {
      * Create an entity from an assemblage
      * @param {object} assemblage
      * @param {string[]} assemblage.components Component list
-     * @param {string?} assemblage.alias Entity alias
-     * @param {object} assemblage.data
-     * @returns {number} New entity id
+     * @param {string=} assemblage.alias Entity alias
+     * @param {any} assemblage.data
+     * @returns {EntityId} New entity id
      */
     createFromAssemblage(assemblage) {
         let entity = this.createEntity()

@@ -1,13 +1,16 @@
-import ECS from "./../../lib/ecs-helper"
+import ECSHelper from "./../../lib/ecs-helper"
 import EntityFactory from "../../factories/entity-factory"
 import Utils from "../../other/utils"
 import SceneBase from "../scene-base"
 
+/**
+ * @extends {SceneBase}
+ */
 export default class PreloadScene extends SceneBase {
     /**
      * Class constructor
-     * @param {ECS} ecs 
-     * @param {*} systems 
+     * @param {ECSHelper} ecs 
+     * @param {any} systems 
      */
     constructor(ecs, systems) {
         super({
@@ -92,7 +95,7 @@ export default class PreloadScene extends SceneBase {
 
         const factory = new EntityFactory(this.ecs)
         
-        Utils.getRectanglePositions(20, 5, 22, 5).forEach(({x, y}) => {            
+        Utils.getRectanglePositions(10, 5, 10, 5).forEach(({x, y}) => {            
             
             factory.createActor({
                 teamId: computer,
@@ -100,7 +103,8 @@ export default class PreloadScene extends SceneBase {
                 desc: "Gobelin",
                 x,
                 y,
-                draw: true
+                draw: true,
+                inBattle: true
             })
             
         });
@@ -150,15 +154,15 @@ export default class PreloadScene extends SceneBase {
 
         const factory = new EntityFactory(this.ecs)
 
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 2; i++) {
             
             factory.createActor({
                 teamId: player,
                 squadId: i < 10 ? squad : squad2,
                 x: 0,
                 y: 0,
-                draw: false
-
+                draw: false,
+                inBattle: false
             })
 
         }

@@ -1,4 +1,7 @@
 import ECSHelper from "../lib/ecs-helper"
+import Utils from "../other/utils"
+
+window.utils = Utils
 
 export default class AnimationSystem {
 
@@ -29,14 +32,36 @@ export default class AnimationSystem {
             display
         } = this.ecs.get(entityId)
 
-        if (position.x === nextPosition.x && position.y === nextPosition.y) {
 
-        }
+        let nextPixelPosition = this.ecs.convertMapPos(nextPosition)
 
-        else {
+
+        if (display.container.x === nextPixelPosition.x && display.container.y === nextPixelPosition.y) {
+
+            position.x = nextPosition.x
+            position.y = nextPosition.y        
             
+            this.removeMessage(message)
+
         }
 
+        else {           
+
+            
+
+            let newPosition = Utils.moveToward(display.container, nextPixelPosition, 1)
+
+            display.container.x = newPosition.x
+            display.container.y = newPosition.y
+        }
+
+    }
+
+
+    removeMessage(message) {
+        const battle = this.ecs.get("Battle", "battle")
+
+        battle.actions = battle.actions.filter(action => action !== message)
     }
 
     /**

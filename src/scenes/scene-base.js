@@ -1,10 +1,9 @@
 import ECS from "../lib/ecs-helper"
-
-// @ts-ignore
-import Phaser from "Phaser"
+import Phaser from "phaser"
 
 /**
  * Base Scene class
+ * @extends {Phaser.Scene}
  */
 export default class SceneBase extends Phaser.Scene {
 
@@ -13,8 +12,8 @@ export default class SceneBase extends Phaser.Scene {
      * @param {object} options
      * @param {string} options.key Scene key
      * @param {ECS} options.ecs ECS
-     * @param {object} options.systems Systems
-     * @param {object?} options.ui UI
+     * @param {object=} options.systems Systems
+     * @param {object=} options.ui UI
      */
     constructor({key, ecs, systems, ui = {}}) {
         super(key)

@@ -33,14 +33,15 @@ export default class EntityFactory {
 
     /**
      * @param {Object} option Options
-     * @param {number?} option.teamId Team entity Id
-     * @param {number?} option.squadId Squad entity Id
-     * @param {desc?} option.desc Actor description
-     * @param {number?} option.x X position on map
-     * @param {number?} option.y Y position on map
-     * @param {boolean?} option.draw Draw actor on scene ?
+     * @param {number=} option.teamId Team entity Id
+     * @param {number=} option.squadId Squad entity Id
+     * @param {string=} option.desc Actor description
+     * @param {number=} option.x X position on map
+     * @param {number=} option.y Y position on map
+     * @param {boolean=} option.draw Draw actor on scene ?
+     * @param {boolean=} option.inBattle Actor in battle ?
      */
-    createActor({teamId = undefined, squadId = undefined, desc = "Soldier", x = 0, y = 0, draw = true}) {
+    createActor({teamId = undefined, squadId = undefined, desc = "Soldier", x = 0, y = 0, draw = true, inBattle = false}) {
 
         this.ecs.createFromAssemblage({
             components: ["position", "actor", "display"],
@@ -52,7 +53,8 @@ export default class EntityFactory {
                 actor: {
                     desc, 
                     squadId,
-                    teamId
+                    teamId,
+                    inBattle
                 },
                 display: {
                     draw,
