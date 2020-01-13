@@ -1,4 +1,4 @@
-import { PrepareBattleComponent } from "../components/components"
+import { PrepareBattleComponent, ActorComponent } from "../components/components"
 import ECS from "../lib/ecs-helper"
 
 export default class InputSystem {
@@ -29,25 +29,25 @@ export default class InputSystem {
 
         units
             .map(id => this.ecs.get(id))
-            .forEach(({position, display}, index) => {
+            .forEach(({position, display, actor}, index) => {
 
                 if (positions.length === units.length) {
                     position.x = positions[index].x
-                    position.y = positions[index].y
-                    
+                    position.y = positions[index].y                    
                     display.draw = true
+                    actor.inBattle = true
                 }
                 else {
                     position.x = 0
                     position.y = 0
-
                     display.draw = false
+                    actor.inBattle = false
 
                     drawError = true
                 }
             })
 
-        prepareBattle.drawError = drawError
+        //prepareBattle.drawError = drawError
         prepareBattle.canConfirm = !drawError
 
     }

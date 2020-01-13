@@ -1,6 +1,7 @@
 import ECS from "./../../lib/ecs-helper"
 import PrepareBattleUI from "./../../scenes/prepare-battle/prepare-battle-ui";
 import SceneBase from "../scene-base"
+import m from "mithril"
 
 
 export default class PrepareBattle extends SceneBase {

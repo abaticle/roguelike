@@ -1,7 +1,7 @@
 import ECS from "../../lib/ecs-helper"
 import BattleSceneUI from "./battle-scene-ui"
 import SceneBase from "../scene-base"
-import { BattleComponent } from "../../components/components"
+import m from "mithril"
 
 export default class BattleScene extends SceneBase {
 
@@ -37,7 +37,8 @@ export default class BattleScene extends SceneBase {
                     newTurn: false,
                     speed: 1,
                     turn: 0,
-                    actions: []                    
+                    actions: [],
+                    drawn: false                    
                 }
             }
         })
@@ -86,42 +87,25 @@ export default class BattleScene extends SceneBase {
         /** @type {BattleComponent} */
         const battle = this.ecs.get("Battle", "battle")
 
-        this.systems.draw.update()
+        if (!battle.drawn) {
+            this.systems.draw.update()
+            battle.drawn = true
+        }
+        
         this.systems.input.update()
         this.systems.animation.update(dt)
 
-        if (battle.newTurn) {
+        if (battle.newTurn && battle.actions.length === 0) {
 
             battle.newTurn = false
 
             this.systems.preparePathfinding.update()
             this.systems.turn.update()
 
-            console.log(this.ecs.get("Battle", "battle", "actions"))
-
-
+            //console.log(this.ecs.get("Battle", "battle", "actions"))
         }
-
-        this.ui.redraw()
         
 
-        return 
-
-
-        if (battle.newTurn) {
-
-            battle.newTurn = false
-
-            if (battle.actions.length === 0) {
-
-                this.systems.preparePathfinding.update()
-                this.systems.movement.update()
-                this.systems.animation.update()
-                this.systems.teamCounter.update()
-                this.systems.ui.update()
-                this.checkEnd()
-             
-            }
-        }       
+        this.ui.redraw()
     }
 }

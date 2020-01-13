@@ -1,5 +1,6 @@
 import { BattleComponent } from "../../components/components";
 import ECSHelper from "../../lib/ecs-helper";
+import m from "mithril"
 
 /** @type {ECSHelper} */
 let ecs
@@ -27,7 +28,8 @@ const BattleSceneUI = {
 
         return m(".right-panel", [
             m("button", {
-                onclick: () => onNewTurnClick() 
+                onclick: () => onNewTurnClick(),
+                class: (!battle.newTurn && battle.actions.length === 0) ? "" : "pure-button-disabled"
             }, "Next turn"),
             
             m("div", [

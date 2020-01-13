@@ -34,8 +34,13 @@ export default class DrawSystem {
                 break
 
             case "Battle":
-                this.drawMap()
-                this.drawActors()
+                const battle = this.ecs.get("Battle", "battle")
+
+                if (!battle.drawn) {
+                    this.drawMap()
+                    this.drawActors()
+                }
+
                 break
                 
 
