@@ -34,7 +34,14 @@ export default class PrepareBattle extends SceneBase {
     createSceneEntity() {
         this.ecs.createFromAssemblage({
             components: ["prepareBattle"],
-            alias: "PrepareBattle"
+            alias: "PrepareBattle",
+            
+            //TODO:Tests à retirer
+            data: {
+                prepareBattle: {
+                    battleReady: true
+                }
+            }
         })
     }
 

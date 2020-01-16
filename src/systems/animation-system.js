@@ -1,7 +1,6 @@
 import ECSHelper from "../lib/ecs-helper"
 import Utils from "../other/utils"
 
-window.utils = Utils
 
 export default class AnimationSystem {
 
@@ -38,6 +37,7 @@ export default class AnimationSystem {
 
         if (display.container.x === nextPixelPosition.x && display.container.y === nextPixelPosition.y) {
 
+            //Update entity map position and remove move message
             position.x = nextPosition.x
             position.y = nextPosition.y        
             
@@ -49,10 +49,34 @@ export default class AnimationSystem {
 
             
 
+            const speed = 5
+
+            if (nextPixelPosition.x > display.container.x) {
+                display.container.x += speed
+            }
+            if (nextPixelPosition.x < display.container.x) {
+                display.container.x -= speed
+            }
+
+            if (nextPixelPosition.y > display.container.y) {
+                display.container.y += speed
+            }
+            if (nextPixelPosition.y < display.container.y) {
+                display.container.y -= speed
+            }
+
+            if (Utils.distance(display.container.x, display.container.y, nextPixelPosition.x, nextPixelPosition.y) < speed) {
+                display.container.x = nextPixelPosition.x
+                display.container.y = nextPixelPosition.y
+            }
+            
+
+            /*
             let newPosition = Utils.moveToward(display.container, nextPixelPosition, 1)
 
             display.container.x = newPosition.x
             display.container.y = newPosition.y
+            */
         }
 
     }

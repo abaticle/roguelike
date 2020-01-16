@@ -40,10 +40,11 @@ export default class EntityFactory {
      * @param {number=} option.y Y position on map
      * @param {boolean=} option.draw Draw actor on scene ?
      * @param {boolean=} option.inBattle Actor in battle ?
+     * @returns {EntityId} Entity created
      */
     createActor({teamId = undefined, squadId = undefined, desc = "Soldier", x = 0, y = 0, draw = true, inBattle = false}) {
 
-        this.ecs.createFromAssemblage({
+        return this.ecs.createFromAssemblage({
             components: ["position", "actor", "display"],
             data: {
                 position: {
