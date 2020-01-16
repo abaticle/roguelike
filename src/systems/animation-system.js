@@ -1,5 +1,6 @@
 import ECSHelper from "../lib/ecs-helper"
 import Utils from "../other/utils"
+import config from "../config"
 
 
 export default class AnimationSystem {
@@ -46,10 +47,11 @@ export default class AnimationSystem {
         }
 
         else {           
-
+            let speed = Math.round(dt / config.MOVE_SPEED)
             
-
-            const speed = 5
+            if (speed = 0) {
+                speed = 1
+            }
 
             if (nextPixelPosition.x > display.container.x) {
                 display.container.x += speed
