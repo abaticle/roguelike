@@ -1,10 +1,6 @@
 import ECSHelper from "../lib/ecs-helper"
 import Utils from "../other/utils"
 import config from "../config"
-<<<<<<< HEAD
-=======
-
->>>>>>> 805d7ae0582e2dd6ac4da42108f49bcc4783a1f5
 
 export default class AnimationSystem {
 
@@ -18,7 +14,7 @@ export default class AnimationSystem {
 
 
     animateAttackMelee(dt, message) {
-        this.removeMessage(message)
+        this.removeMessage(message) 
     }
 
 
@@ -72,21 +68,13 @@ export default class AnimationSystem {
         let nextPixelPosition = this.ecs.convertMapPos(nextPosition)
 
         if (display.container.x === nextPixelPosition.x && display.container.y === nextPixelPosition.y) {
-<<<<<<< HEAD
-=======
 
             //Update entity map position and remove move message
             position.x = nextPosition.x
             position.y = nextPosition.y        
             
->>>>>>> 805d7ae0582e2dd6ac4da42108f49bcc4783a1f5
             this.removeMessage(message)
         }
-<<<<<<< HEAD
-        else {                       
-            let newPosition = Utils.moveToward(display.container, nextPixelPosition, config.MOVE_DURATION)
-=======
-
         else {           
             let speed = Math.round(dt / config.MOVE_SPEED)
             
@@ -116,7 +104,6 @@ export default class AnimationSystem {
 
             /*
             let newPosition = Utils.moveToward(display.container, nextPixelPosition, 1)
->>>>>>> 805d7ae0582e2dd6ac4da42108f49bcc4783a1f5
 
             display.container.x = newPosition.x
             display.container.y = newPosition.y

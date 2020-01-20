@@ -24,7 +24,7 @@ export default class BattleScene extends SceneBase {
         this.createSceneEntity()
         this.createUI()
 
-        this.ecs.scene.cameras.main.zoom = 1.5
+        //this.ecs.scene.cameras.main.zoom = 1.5
 
         //this.input.on('pointerdown', this.onPointerdown.bind(this))
         //this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_DOWN, this.onKeyboardDown.bind(this));
