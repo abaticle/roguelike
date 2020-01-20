@@ -2,6 +2,7 @@ import ECSHelper from "./../../lib/ecs-helper"
 import EntityFactory from "../../factories/entity-factory"
 import Utils from "../../other/utils"
 import SceneBase from "../scene-base"
+import config from "../../config"
 
 /**
  * @extends {SceneBase}
@@ -25,11 +26,16 @@ export default class PreloadScene extends SceneBase {
      * Preload assets
      */
     preload() {
+        this.load.image("sprites", "assets/sprites.png")
+        this.load.spritesheet("sprites1", "assets/sprites.png", {
+            frameWidth: config.TILE_SIZE,
+            frameHeight: config.TILE_SIZE
+        })
         this.load.image("arrow1", "assets/arrpw.png")
         this.load.image("ground1", "assets/dg_grounds32.gif")
         this.load.spritesheet("monsters1", "assets/dg_monster132.png", {
-            frameWidth: 32,
-            frameHeight: 32
+            frameWidth: config.TILE_SIZE,
+            frameHeight: config.TILE_SIZE
         })
     }
 
@@ -95,7 +101,7 @@ export default class PreloadScene extends SceneBase {
 
         const factory = new EntityFactory(this.ecs)
         
-        Utils.getRectanglePositions(10, 5, 10, 5).forEach(({x, y}) => {            
+        Utils.getRectanglePositions(20, 5, 23, 15).forEach(({x, y}) => {            
             
             factory.createActor({
                 teamId: computer,
@@ -127,7 +133,7 @@ export default class PreloadScene extends SceneBase {
         })
 
         //Create squads
-        let squad = this.ecs.createFromAssemblage({
+        let squad1 = this.ecs.createFromAssemblage({
             components: ["squad"],
             data: {
                 squad: {
@@ -150,15 +156,41 @@ export default class PreloadScene extends SceneBase {
                     ai: "melee"
                 }
             }
-        })        
+        })      
+
+        let squad3 = this.ecs.createFromAssemblage({
+            components: ["squad"],
+            data: {
+                squad: {
+                    desc: "Squad 3",
+                    number: 3,
+                    teamId: player,
+                    ai: "melee"
+                }
+            }
+        })         
 
         const factory = new EntityFactory(this.ecs)
 
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 100; i++) {
+
+            let s = 0
+
+            if (i < 30) {
+                s = squad1
+            }
+            else {
+                if (i < 60) {
+                    s = squad2
+                }
+                else {
+                    s = squad3
+                }
+            }
             
             factory.createActor({
                 teamId: player,
-                squadId: i < 10 ? squad : squad2,
+                squadId: s,
                 x: 0,
                 y: 0,
                 draw: false,

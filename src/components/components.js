@@ -45,7 +45,8 @@ export const DisplayComponent = {
 /** @type {GameComponent} */
 export const GameComponent = {
     name: "game",
-    scene: undefined
+    scene: undefined,
+    debug: false
 }
 
 
@@ -58,7 +59,9 @@ export const BattleComponent = {
     actions: [],
     selectedUnit: undefined,
     selectedSquad: undefined,
-    drawn: false
+    drawn: false,
+    lines: [],
+    linesDrawn: false
 }
 
 /** @type {PrepareBattleComponent} */

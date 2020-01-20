@@ -26,7 +26,9 @@ export default class Game extends Phaser.Game {
             title: "Tests !",
             width: window.innerWidth,
             height: window.innerHeight,
-            parent: "game"
+            parent: "game",
+            pixelArt: true,
+            zoom: 2
         })
 
         //Create ECS
@@ -60,7 +62,11 @@ export default class Game extends Phaser.Game {
         //And start
         this.scene.start("Preload")
 
-        window.ecs = ecs
+
+
+
+        window["ecs"] = ecs
+        ecs.set(true, "Game", "game", "debug")
     }
 
 }

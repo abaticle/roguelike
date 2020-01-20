@@ -51,6 +51,7 @@
  * @typedef {object} GameComponent Game component
  * @property {string} name Component name
  * @property {Phaser.Scene} scene Current Phaser scene
+ * @property {boolean} debug Debug mode activated
  */
 
 /** 
@@ -63,6 +64,8 @@
  * @property {EntityId} selectedUnit Selected unit id
  * @property {EntityId} selectedSquad Selected unit id
  * @property {boolean} drawn Unit already drawn ?
+ * @property {Phaser.GameObjects.Line[]} lines
+ * @property {boolean} actionsDrawn
  */
 
  

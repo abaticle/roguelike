@@ -38,30 +38,22 @@ export default class MessageHelper {
 
         const description = `Entity ${entityId} move from [${position.x},${position.y}] to [${nextPosition.x},${nextPosition.y}]`
 
-        this.ecs.setWalkable(position.x, position.y, true)
-
-        //position.x = nextPosition.x
-        //position.y = nextPosition.y
-
-        //TODO:To remove, only for testings
-        this.ecs.searchEntities("position").forEach(e => {
-            if (e !== entityId) {
-                const pos = this.ecs.get(e, "position")
-                if (pos.x === position.x && pos.y === position.y) {
-                    console.log("error pos !")
-                }
-            }
-        })
-
-        this.ecs.setWalkable(position.x, position.y, false)
-
+        
 
         this.pushMessage({
             type: "move",
             entityId,
+            currentPosition: {
+                x: position.x,
+                y: position.y
+            },
             nextPosition,
             description
         })
+
+        
+        position.x = nextPosition.x 
+        position.y = nextPosition.y
     }
 
 

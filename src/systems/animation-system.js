@@ -1,7 +1,6 @@
 import ECSHelper from "../lib/ecs-helper"
 import Utils from "../other/utils"
-
-window.utils = Utils
+import config from "../config"
 
 export default class AnimationSystem {
 
@@ -14,13 +13,47 @@ export default class AnimationSystem {
     }
 
 
+    animateAttackMelee(dt, message) {
+        this.removeMessage(message)
+    }
+
+
+    animateAttackRanged(dt, message) {
+        this.removeMessage(message)
+    }
+
+    /**
+     * 
+     * @param {number} dt 
+     * @param {DieMessage} message 
+     */
+    animateDie(dt, message) {
+
+        let {
+            entityId 
+        } = message
+
+        let {
+            display
+        } = this.ecs.get(entityId)
+
+        display.draw = false
+        
+        if (display.container) {
+            display.container.visible = false            
+        }
+
+        this.removeMessage(message)
+
+    }
+
+
     /**
      * Move animation
      * @param {number} dt 
      * @param {MoveMessage} message 
      */
     animateMove(dt, message) {
-
 
         let {
             entityId,
@@ -32,32 +65,23 @@ export default class AnimationSystem {
             display
         } = this.ecs.get(entityId)
 
-
         let nextPixelPosition = this.ecs.convertMapPos(nextPosition)
 
-
         if (display.container.x === nextPixelPosition.x && display.container.y === nextPixelPosition.y) {
-
-            position.x = nextPosition.x
-            position.y = nextPosition.y        
-            
             this.removeMessage(message)
-
         }
-
-        else {           
-
-            
-
-            let newPosition = Utils.moveToward(display.container, nextPixelPosition, 1)
+        else {                       
+            let newPosition = Utils.moveToward(display.container, nextPixelPosition, config.MOVE_DURATION)
 
             display.container.x = newPosition.x
             display.container.y = newPosition.y
         }
-
     }
 
-
+    /**
+     * 
+     * @param {Message} message 
+     */
     removeMessage(message) {
         const battle = this.ecs.get("Battle", "battle")
 
@@ -70,33 +94,32 @@ export default class AnimationSystem {
      */
     update(dt) {
 
-        this.ecs.actions.forEach(action => {
+        /** @type {BattleComponent} */
+        const battle = this.ecs.get("Battle", "battle")
 
-            switch(action.type) {
-                case "die":
-                    break
+        if (battle.newTurn) {           
 
-                case "attackMelee":
-                    break
+            this.ecs.actions.forEach(action => {
 
-                case "move":
-                    this.animateMove(dt, action)
-                    break
+                switch(action.type) {
+                    case "die":
+                        this.animateDie(dt, action)
+                        break
 
-                case "attackRanged":
-                    break
-            }
+                    case "attackMelee":
+                        this.animateAttackMelee(dt, action)
+                        break
 
-        })
+                    case "move":
+                        this.animateMove(dt, action)
+                        break
 
+                    case "attackRanged":
+                        this.animateAttackRanged(dt, action)
+                        break
+                }
 
-        this.ecs.actors.map(id => this.ecs.get(id)).forEach(data => {
-
-            const {
-                position 
-            } = data
-
-            
-        })
+            })
+        }
     }
 }

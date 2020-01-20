@@ -71,23 +71,36 @@ class TurnSystem {
 
     update() {
 
-        this.ecs.actors
-            .map(id => this.ecs.get(id, "actor"))   
-            .filter(actor => actor.health > 0 && actor.inBattle)
-            .forEach(actor => {
+        /** @type {BattleComponent} */
+        const battle = this.ecs.get("Battle", "battle")
 
-                const squad = this.ecs.get(actor.squadId, "squad")
+        
+        if (battle.actions.length === 0) {
 
-                switch(squad.ai) {
-                    case "melee":
-                        this.moveMelee(actor._id)
-                        break
+            this.ecs.actors
+                .map(id => this.ecs.get(id, "actor"))   
+                .filter(actor => actor.health > 0 && actor.inBattle)
+                .forEach(actor => {
 
-                    case "ranged":
-                        this.moveRanged(actor._id)    
-                        break
-                }
-            })
+                    const squad = this.ecs.get(actor.squadId, "squad")
+
+                    switch(squad.ai) {
+                        case "melee":
+                            this.moveMelee(actor._id)
+                            break
+
+                        case "ranged":
+                            this.moveRanged(actor._id)    
+                            break
+                    }
+                })
+
+            battle.actionsDrawn = false
+            battle.newTurn = false
+
+        }
+
+
     }
 }
 

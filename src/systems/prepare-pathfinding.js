@@ -26,8 +26,9 @@ class PreparePathfindingSystem {
 
         //Set entities positions as not walkables
         this.ecs.actors
-            .map(id => this.ecs.get(id, "position"))        
-            .forEach(position => {
+            .map(id => this.ecs.get(id))        
+            .filter(({actor}) => actor.inBattle === true && actor.health > 0)
+            .forEach(({position}) => {
                 map.grid.setWalkableAt(position.x, position.y, false)
             });        
     }
