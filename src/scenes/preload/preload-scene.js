@@ -172,6 +172,7 @@ export default class PreloadScene extends SceneBase {
 
         const factory = new EntityFactory(this.ecs)
 
+<<<<<<< HEAD
         for (let i = 0; i < 100; i++) {
 
             let s = 0
@@ -187,15 +188,40 @@ export default class PreloadScene extends SceneBase {
                     s = squad3
                 }
             }
+=======
+        for (let i = 0; i < 5; i++) {
+
+            let squadId = i < 10 ? squad : squad2
+>>>>>>> 805d7ae0582e2dd6ac4da42108f49bcc4783a1f5
             
-            factory.createActor({
+            let id = factory.createActor({
                 teamId: player,
+<<<<<<< HEAD
                 squadId: s,
+=======
+                squadId: squadId,
+>>>>>>> 805d7ae0582e2dd6ac4da42108f49bcc4783a1f5
                 x: 0,
                 y: 0,
                 draw: false,
                 inBattle: false
             })
+
+            if (squadId === squad) {
+                let {
+                    position,
+                    actor,
+                    display
+                } = this.ecs.get(id)
+
+                position.x = 3
+                position.y = 2 + i
+
+                actor.inBattle = true
+
+                display.draw = true
+
+            }
 
         }
     }

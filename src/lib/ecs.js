@@ -15,6 +15,9 @@ export default class ECS {
         this.alias = {}
     }
 
+    /**
+     * Clear everything : Entities, Components & Cached functions
+     */
     clearAll() {
         this.entities = []
         this.entitiesComponents = {}
@@ -110,15 +113,13 @@ export default class ECS {
      * @param {number|string} id Id or alias of an entity
      */
     existEntity(id) {
-        if (typeof id === "number") {
-            return this.entities.includes(id)
+        switch(typeof id) {
+            case "number":
+                return this.entities.includes(id)
+
+            case "string":
+                return this.alias[id] !== undefined
         }
-        if (typeof id === "string") {
-            if (this.alias[id] !== undefined) {
-                return true
-            }
-        }        
-        return false
     }
 
     /**
@@ -141,7 +142,7 @@ export default class ECS {
 
     /**
      * Create new entity
-     * @param {string|string[]|undefined=} components 
+     * @param {string|string[]=} components 
      * @returns {number} Newly generated entity id
      */
     createEntity(components) {
