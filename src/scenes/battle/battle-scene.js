@@ -2,6 +2,7 @@ import ECS from "../../lib/ecs-helper"
 import BattleSceneUI from "./battle-scene-ui"
 import SceneBase from "../scene-base"
 import m from "mithril"
+import config from "../../config"
 
 export default class BattleScene extends SceneBase {
 
@@ -22,6 +23,8 @@ export default class BattleScene extends SceneBase {
     create() {
         this.createSceneEntity()
         this.createUI()
+
+        this.ecs.scene.cameras.main.zoom = 1.5
 
         //this.input.on('pointerdown', this.onPointerdown.bind(this))
         //this.input.keyboard.on(Phaser.Input.Keyboard.Events.ANY_KEY_DOWN, this.onKeyboardDown.bind(this));
@@ -83,29 +86,12 @@ export default class BattleScene extends SceneBase {
     }
 
     update(dt) {
-
-        /** @type {BattleComponent} */
-        const battle = this.ecs.get("Battle", "battle")
-
-        if (!battle.drawn) {
-            this.systems.draw.update()
-            battle.drawn = true
-        }
         
+        this.systems.draw.update()
         this.systems.input.update()
         this.systems.animation.update(dt)
-
-        if (battle.newTurn && battle.actions.length === 0) {
-
-            battle.newTurn = false
-
-            this.systems.preparePathfinding.update()
-            this.systems.turn.update()
-
-            //console.log(this.ecs.get("Battle", "battle", "actions"))
-        }
-        
-
+        this.systems.turn.update()        
         this.ui.redraw()
+        
     }
 }

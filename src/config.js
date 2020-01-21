@@ -1,8 +1,8 @@
 export default {
     /** @type {number} */
-    TILE_SIZE: 32,
-    TILE_MIDLE_SIZE: 16,
-    MOVE_DURATION: 50,
+    TILE_SIZE: 16,
+    TILE_MIDLE_SIZE: 8,
+    MOVE_DURATION: 10,
     RANGED_ATTACK_DURATION: 40,
     MELEE_ATTACK_DURATION: 40,
     DIE_DURATION: 30,

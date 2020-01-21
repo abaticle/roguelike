@@ -20,13 +20,13 @@ export default class EntityFactory {
 
         switch (desc) {
             case "Soldier":
-                return 1
+                return 5
 
             case "Archer":
-                return 2
+                return 5
 
             case "Gobelin":
-                return 12
+                return 5
 
         }        
     }

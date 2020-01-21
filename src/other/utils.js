@@ -14,7 +14,7 @@ export default class Utils {
 
         let dist = Math.sqrt(tx * tx + ty * ty);
 
-        if (dist > speed) {
+        if (dist < speed) {
             dist = speed
         }
 
@@ -282,11 +282,14 @@ export default class Utils {
             for (let j = 0; j < width; j++) {
                 const randomInt = Utils.randomInteger(1, 100)
 
-                if (randomInt < 8) {
-                    row.push(9)
+                if (randomInt < 2) {
+                    row.push(1)
+                }
+                else if (randomInt < 4) {
+                    row.push(0)
                 }
                 else {
-                    row.push(10)
+                    row.push(2)
                 }
             }
 

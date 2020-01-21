@@ -29,7 +29,7 @@ const BattleSceneUI = {
         return m(".right-panel", [
             m("button", {
                 onclick: () => onNewTurnClick(),
-                class: (!battle.newTurn && battle.actions.length === 0) ? "" : "pure-button-disabled"
+                //class: (!battle.newTurn && battle.actions.length === 0) ? "" : "pure-button-disabled"
             }, "Next turn"),
             
             m("div", [

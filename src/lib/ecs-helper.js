@@ -4,6 +4,7 @@ import { MapComponent } from "../components/components"
 import Config from "../config"
 import SceneBase from "../scenes/scene-base"
 import config from "../config"
+import PF from "pathfinding"
 
 class ECSHelper extends ECS {
 
@@ -81,7 +82,7 @@ class ECSHelper extends ECS {
     
     /**
      * 
-     * @param {MapPosition} position 
+     * @param {MousePosition} position 
      * @param {number} color
      */
     drawSquare(position, color = Config.COLOR_SELECTION) {
@@ -94,6 +95,24 @@ class ECSHelper extends ECS {
             .rectangle(position.x, position.y, Config.TILE_SIZE, Config.TILE_SIZE)
             .setStrokeStyle(2, color)
 
+    }
+
+
+    /**
+     * 
+     * @param {MousePosition} from 
+     * @param {MousePosition} to 
+     * @param {number} color
+     */
+    drawLine(from, to, color = Config.COLOR_SELECTION) {
+        const {
+            scene
+        } = this
+
+        return scene.add
+            .line(0, 0, from.x, from.y, to.x, to.y)
+            .setStrokeStyle(2, color)
+            .setOrigin(0,0)
     }
 
 
@@ -113,7 +132,7 @@ class ECSHelper extends ECS {
     }
 
 
-    drawPositionEntity(entityId) {
+    drawEntity(entityId) {
     
         const {
             display,
@@ -152,7 +171,7 @@ class ECSHelper extends ECS {
 
             else { 
                 display.container = scene.add.container(x, y)
-                display.container.add(scene.add.sprite(0, 0, "monsters1", display.frame))   
+                display.container.add(scene.add.sprite(0, 0, "sprites1", display.frame))   
             }   
 
         }
@@ -190,11 +209,13 @@ class ECSHelper extends ECS {
         if (drawMap) {
             map.tilemap = scene.make.tilemap({
                 data: map.layout,
-                tileWidth: 32,
-                tileHeight: 32
+                tileWidth: config.TILE_SIZE,
+                tileHeight: config.TILE_SIZE
             });        
             
-            const tiles = map.tilemap.addTilesetImage("ground1");
+            //const tiles = map.tilemap.addTilesetImage("ground1");
+
+            const tiles = map.tilemap.addTilesetImage("sprites")
             
             map.tilemap.createStaticLayer(0, tiles, 0, 0);
         }
@@ -370,6 +391,103 @@ class ECSHelper extends ECS {
     }
 
 
+    get livingBattleActors() {
+
+        return this.actors.filter(id => {
+            const actor = this.get(id, "actor")
+
+            if (actor.inBattle && actor.health > 0) {
+                return true
+            }
+
+            return false
+        })
+
+
+    }
+
+
+    /**
+     * Get path from/to position
+     * @param {MapPosition} positionFrom 
+     * @param {MapPosition} positionTo 
+     */
+    getPath(positionFrom, positionTo) {
+
+        const map = this.map
+
+        let grid = new PF.Grid(map.width, map.height)
+
+
+        let actions = this.get("Battle", "battle", "actions")
+
+        this.livingBattleActors.forEach(id => {
+
+            const pos = this.get(id, "position")
+            grid.setWalkableAt(pos.x, pos.y, false)
+
+            return
+
+            let found = false 
+
+            //If unit is moving toward a point, block it
+            actions.find(action => {
+                if (action === "move" && action["entityId"] === id) {
+                    grid.setWalkableAt(action.nextPosition.x, action.nextPosition.y, false)
+
+                    found = true
+                }
+            })
+
+            //Else block unit position
+            if (!found) {
+                const pos = this.get(id, "position")
+                grid.setWalkableAt(pos.x, pos.y, false)
+            }
+        })
+
+        grid.setWalkableAt(positionFrom.x, positionFrom.y, true)
+        grid.setWalkableAt(positionTo.x, positionTo.y, true)
+
+
+        
+        let pathFinder = new PF.AStarFinder({
+            diagonalMovement: 1
+        })
+
+        let path = pathFinder.findPath(positionFrom.x, positionFrom.y, positionTo.x, positionTo.y, grid)
+
+        return path
+
+
+        /*if (map.grid === undefined) {
+            map.grid = new PF.Grid(map.width, map.height)
+        }
+
+        map.finder = new PF.AStarFinder({
+            // @ts-ignore
+            allowDiagonal: true
+        })
+
+        this.livingBattleActors.forEach(id => {
+            const position = this.get(id, "position")
+
+            map.grid.setWalkableAt(position.x, position.y, false)
+        })
+                
+
+        map.grid.setWalkableAt(positionFrom.x, positionFrom.y, true)
+        map.grid.setWalkableAt(positionTo.x, positionTo.y, true)
+
+        let path = this.map.finder.findPath(positionFrom.x, positionFrom.y, positionTo.x, positionTo.y, map.grid)
+
+        return path
+        */
+
+
+    }
+
+
     /**
      * Set position as walkable/not walkable on map
      * @param {number} x X Position
@@ -434,7 +552,9 @@ class ECSHelper extends ECS {
         const positionFrom = this.get(entityFromId, "position")
         const positionTo = this.get(entityToId, "position")
 
-        let path = this.findPath(positionFrom.x, positionFrom.y, positionTo.x, positionTo.y)
+        //let path = this.findPath(positionFrom.x, positionFrom.y, positionTo.x, positionTo.y)
+
+        let path = this.getPath(positionFrom, positionTo)
 
         if (path.length > 1) {
             return {
@@ -490,7 +610,7 @@ class ECSHelper extends ECS {
         return this.actors.filter(entityId => {
             const actor = this.get(entityId, "actor")
 
-            if (actor.health > 0 && actor.teamId !== friendlyActor.teamId) {
+            if (actor.inBattle && actor.health > 0 && actor.teamId !== friendlyActor.teamId) {
                 return true
             }
             return false
