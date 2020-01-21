@@ -48,6 +48,10 @@ export const GameComponent = {
     scene: undefined
 }
 
+/** @type {WorldComponent} */
+export const WorldComponent = {
+    name: "world"
+}
 
 /** @type {BattleComponent} */
 export const BattleComponent = {

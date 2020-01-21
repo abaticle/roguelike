@@ -190,6 +190,7 @@ export default class PreloadScene extends SceneBase {
      * Start and launch PrepareBattle scene
      */
     start() {
-        this.scene.start("PrepareBattle")
+        //this.scene.start("PrepareBattle")
+        this.scene.start("World")
     }
 }
