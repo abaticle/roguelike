@@ -29,7 +29,7 @@ export default class Game extends Phaser.Game {
             height: window.innerHeight,
             parent: "game",
             pixelArt: true,
-            zoom: 2
+            zoom: 1
         })
 
         //Create ECS

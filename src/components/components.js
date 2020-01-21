@@ -65,7 +65,7 @@ export const BattleComponent = {
     selectedSquad: undefined,
     drawn: false,
     lines: [],
-    linesDrawn: false
+    actionsDrawn: false
 }
 
 /** @type {PrepareBattleComponent} */
@@ -99,6 +99,7 @@ const Components = [
     MapComponent,
     TeamComponent,
     GameComponent,
+    WorldComponent,
     BattleComponent,
     PrepareBattleComponent
 ]

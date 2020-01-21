@@ -69,12 +69,8 @@ export default class WorldScene extends SceneBase {
 
     create() {
         this.createSceneEntity()
-        this.test()
-    }
-
-    test() {
-
-
+        
+        this.scene.start("PrepareBattle")
     }
 
     createSceneEntity() {
@@ -82,6 +78,7 @@ export default class WorldScene extends SceneBase {
             components: ["world"],
             alias: "World"
         })
+        
     }
 
 }

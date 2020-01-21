@@ -58,7 +58,7 @@ export default class PreloadScene extends SceneBase {
      * Create map
      */
     createMap() {
-        this.ecs.createFromAssemblage({
+        this.ecs.createFromAssemblage({ 
             alias: "Map",
             components: ["map"],
             data: {
@@ -172,42 +172,20 @@ export default class PreloadScene extends SceneBase {
 
         const factory = new EntityFactory(this.ecs)
 
-<<<<<<< HEAD
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 20; i++) {
 
-            let s = 0
-
-            if (i < 30) {
-                s = squad1
-            }
-            else {
-                if (i < 60) {
-                    s = squad2
-                }
-                else {
-                    s = squad3
-                }
-            }
-=======
-        for (let i = 0; i < 5; i++) {
-
-            let squadId = i < 10 ? squad : squad2
->>>>>>> 805d7ae0582e2dd6ac4da42108f49bcc4783a1f5
+            let squadId = i < 10 ? squad1 : squad2
             
             let id = factory.createActor({
                 teamId: player,
-<<<<<<< HEAD
-                squadId: s,
-=======
                 squadId: squadId,
->>>>>>> 805d7ae0582e2dd6ac4da42108f49bcc4783a1f5
                 x: 0,
                 y: 0,
                 draw: false,
                 inBattle: false
             })
 
-            if (squadId === squad) {
+            /*if (squadId === squad) {
                 let {
                     position,
                     actor,
@@ -221,7 +199,7 @@ export default class PreloadScene extends SceneBase {
 
                 display.draw = true
 
-            }
+            }*/
 
         }
     }

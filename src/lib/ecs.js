@@ -1,12 +1,14 @@
 import _ from "lodash"
 
 
+const ARRAY_SIZE = 1000
+
 export default class ECS {
 
     constructor() {
 
         /** @type {number[]} Entity list */
-        this.entities = []
+        this.entities = new Array(ARRAY_SIZE)
 
         this.entitiesComponents = {}
         this.components = {}
@@ -19,7 +21,7 @@ export default class ECS {
      * Clear everything : Entities, Components & Cached functions
      */
     clearAll() {
-        this.entities = []
+        this.entities = new Array(ARRAY_SIZE)
         this.entitiesComponents = {}
         this.components = {}
         this._cache = {}
@@ -172,7 +174,7 @@ export default class ECS {
             }
     
             this.components[component.name] = component
-            this.entitiesComponents[component.name] = []
+            this.entitiesComponents[component.name] = new Array(ARRAY_SIZE)
         })
 
 
