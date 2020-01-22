@@ -58,7 +58,7 @@ export default class PreloadScene extends SceneBase {
      * Create map
      */
     createMap() {
-        this.ecs.createFromAssemblage({
+        this.ecs.createFromAssemblage({ 
             alias: "Map",
             components: ["map"],
             data: {
@@ -222,6 +222,7 @@ export default class PreloadScene extends SceneBase {
      * Start and launch PrepareBattle scene
      */
     start() {
-        this.scene.start("PrepareBattle")
+        //this.scene.start("PrepareBattle")
+        this.scene.start("World")
     }
 }

@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 /** 
  * @typedef {number|undefined} EntityId Entity Id
@@ -68,6 +69,10 @@
  * @property {boolean} actionsDrawn
  */
 
+/** 
+ * @typedef {object} WorldComponent World scene component
+ * @property {string} name Component name
+ */
  
 /**
  * @typedef {object} PrepareBattleComponent Prepare battle scene component 
@@ -79,7 +84,6 @@
  * @property {boolean} battleReady Battle can be launched ? 
  */
 
- // @ts-ignore
 /**
  * @typedef {object} MapComponent Map component
  * @property {string} name Component name

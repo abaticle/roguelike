@@ -1,4 +1,5 @@
 //Scenes 
+import WorldScene from "./scenes/world/world-scene"
 import BattleScene from "./scenes/battle/battle-scene"
 import EndBattleScene from "./scenes/end-battle/end-battle-scene"
 import PrepareBattleScene from "./scenes/prepare-battle/prepare-battle"
@@ -54,6 +55,7 @@ export default class Game extends Phaser.Game {
         
         //Add scenes
         this.scene.add("Preload", new PreloadScene(ecs, systems))
+        this.scene.add("World", new WorldScene(ecs, systems))
         this.scene.add("PrepareBattle", new PrepareBattleScene(ecs, systems))
         this.scene.add("Battle", new BattleScene(ecs, systems))
         this.scene.add("EndBattle", new EndBattleScene(ecs, systems))

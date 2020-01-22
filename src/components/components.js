@@ -49,6 +49,10 @@ export const GameComponent = {
     debug: false
 }
 
+/** @type {WorldComponent} */
+export const WorldComponent = {
+    name: "world"
+}
 
 /** @type {BattleComponent} */
 export const BattleComponent = {
@@ -61,7 +65,7 @@ export const BattleComponent = {
     selectedSquad: undefined,
     drawn: false,
     lines: [],
-    linesDrawn: false
+    actionsDrawn: false
 }
 
 /** @type {PrepareBattleComponent} */
@@ -95,6 +99,7 @@ const Components = [
     MapComponent,
     TeamComponent,
     GameComponent,
+    WorldComponent,
     BattleComponent,
     PrepareBattleComponent
 ]
