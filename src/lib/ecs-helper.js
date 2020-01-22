@@ -171,7 +171,7 @@ class ECSHelper extends ECS {
 
             else { 
                 display.container = scene.add.container(x, y)
-                display.container.add(scene.add.sprite(0, 0, "sprites1", display.frame))   
+                display.container.add(scene.add.sprite(0, 0, "monsters1", display.frame))   
             }   
 
         }
@@ -215,7 +215,8 @@ class ECSHelper extends ECS {
             
             //const tiles = map.tilemap.addTilesetImage("ground1");
 
-            const tiles = map.tilemap.addTilesetImage("sprites")
+            //const tiles = map.tilemap.addTilesetImage("sprites")
+            const tiles = map.tilemap.addTilesetImage(Config.SPRITESHEET_MAP_1)
             
             map.tilemap.createStaticLayer(0, tiles, 0, 0);
         }

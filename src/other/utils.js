@@ -283,13 +283,13 @@ export default class Utils {
                 const randomInt = Utils.randomInteger(1, 100)
 
                 if (randomInt < 2) {
-                    row.push(1)
+                    row.push(11)
                 }
                 else if (randomInt < 4) {
-                    row.push(0)
+                    row.push(9)
                 }
                 else {
-                    row.push(2)
+                    row.push(10)
                 }
             }
 

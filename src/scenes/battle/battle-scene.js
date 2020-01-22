@@ -89,8 +89,8 @@ export default class BattleScene extends SceneBase {
         
         this.systems.draw.update()
         this.systems.input.update()
-        this.systems.animation.update(dt)
         this.systems.turn.update()        
+        this.systems.animation.update(dt)
         this.ui.redraw()
         
     }

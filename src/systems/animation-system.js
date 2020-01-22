@@ -1,158 +1,177 @@
-import ECSHelper from "../lib/ecs-helper"
+
 import Utils from "../other/utils"
 import config from "../config"
+import ECSHelper from "../lib/ecs-helper"
 
-export default class AnimationSystem {
+class AnimationSystem {
 
     /**
-     * 
+     * Class constructor
      * @param {ECSHelper} ecs 
      */
     constructor(ecs) {
         this.ecs = ecs
+        this.timeline = undefined
     }
 
+    getScene() {
+        return this.ecs.get("Battle", "battle", "scene")
+    }    
 
-    animateAttackMelee(dt, message) {
-        this.removeMessage(message) 
-    }
+    /**
+     * Remove first message
+     */
+    shiftMessage() {
+        const actions = this.ecs.get("Battle", "battle", "actions")
 
-
-    animateAttackRanged(dt, message) {
-        this.removeMessage(message)
+        actions.shift()
     }
 
     /**
-     * 
-     * @param {number} dt 
-     * @param {DieMessage} message 
+     * Animate movement
+     * @param {MoveMessage} message Move message 
      */
-    animateDie(dt, message) {
+    animateMove(message) {
 
-        let {
-            entityId 
-        } = message
+        const {
+            display,
+            position
+        } = this.ecs.get(message.entityId)        
 
-        let {
-            display
-        } = this.ecs.get(entityId)
+        this.timeline.add({
+            targets: display.container,
+            x: (config.TILE_SIZE * position.x) + config.TILE_MIDLE_SIZE,
+            y: (config.TILE_SIZE * position.y) + config.TILE_MIDLE_SIZE,
+            ease: 'Power1',
+            duration: config.MOVE_DURATION,
+            onStart: () => {},
+            onComplete: () => {}
+        });
 
-        display.draw = false
+
+    }
+
+    /**
+     * Animate melee movements
+     * @param {AttackMeleeMessage} message Attack melee message
+     */
+    animateMelee(message) {
         
-        if (display.container) {
-            display.container.visible = false            
-        }
+        const {
+            display, 
+            position
+        } = this.ecs.get(message.from)
 
-        this.removeMessage(message)
+        const toPosition = this.ecs.get(message.to, "position")
+        const targetPosition = Utils.getPositionBetweenTwoPoints(position.x, position.y, toPosition.x, toPosition.y)
+
+        this.timeline.add({
+            targets: display.container,
+            x: (config.TILE_SIZE * targetPosition.x) + config.TILE_MIDLE_SIZE,
+            y: (config.TILE_SIZE * targetPosition.y) + config.TILE_MIDLE_SIZE,
+            duration: config.MELEE_ATTACK_DURATION,
+            yoyo: true
+        })
 
     }
 
 
     /**
-     * Move animation
-     * @param {number} dt 
-     * @param {MoveMessage} message 
+     * Animate ranged attack
+     * @param {AttackRangedMessage} message Animation message
      */
-    animateMove(dt, message) {
+    animateRanged(message) {
 
-        let {
-            entityId,
-            nextPosition
-        } = message
+        const fromPosition = this.ecs.get(message.from, "position")
+        const toPosition = this.ecs.get(message.to, "position")
+
+        const arrowSprite = this.getScene().make.sprite({
+            x: (fromPosition.x * 32) + 16,
+            y: (fromPosition.y * 32) + 16,
+            key: "arrow1"
+        })
+
+        this.timeline.add({
+            targets: arrowSprite,
+            x: (32 * toPosition.x) + 16,
+            y: (32 * toPosition.y) + 16,
+            ease: 'Power1',
+            duration: config.RANGED_ATTACK_DURATION,
+            onStart: () => {},
+            onComplete: () => {
+                arrowSprite.destroy()
+            }
+        });
+
+
+
+    }
+
+    /**
+     * Animate die
+     * @param {DieMessage} message
+     */    
+    animateDie(message) {
+
+        const {
+            display 
+        } = this.ecs.get(message.entityId)        
+
+        //display.sprite.destroy()
+
+        this.timeline.add({
+            targets: display.container,
+            ease: 'Power1',
+            duration: config.DIE_DURATION,
+            alpha: 0,
+            onStart: () => {},
+            onComplete: () => {
+                display.container.destroy()
+            }
+        });
+    }
+
+    handleAction(action) {
+        switch (action.type) {
+            case "move":
+                this.animateMove(action)
+                break
+
+            case "attackMelee":
+                this.animateMelee(action)
+                break
+
+            case "attackRanged":
+                this.animateRanged(action)
+                break
+
+            case "die":
+                this.animateDie(action)
+                break
+        }
+    }
+
+    update() {
+
+        let actions = this.ecs.get("Battle", "battle", "actions")
+
+        if (actions.length === 0) {
+            return 
+        }
         
-        let {
-            position, 
-            display
-        } = this.ecs.get(entityId)
 
-        let nextPixelPosition = this.ecs.convertMapPos(nextPosition)
-
-        if (display.container.x === nextPixelPosition.x && display.container.y === nextPixelPosition.y) {
-
-            //Update entity map position and remove move message
-            position.x = nextPosition.x
-            position.y = nextPosition.y        
-            
-            this.removeMessage(message)
-        }
-        else {           
-            let speed = Math.round(dt / config.MOVE_SPEED)
-            
-            if (speed = 0) {
-                speed = 1
+        this.timeline = this.ecs.scene.tweens.createTimeline({
+            onComplete: () => {
+                console.log("end")
             }
+        });
 
-            if (nextPixelPosition.x > display.container.x) {
-                display.container.x += speed
-            }
-            if (nextPixelPosition.x < display.container.x) {
-                display.container.x -= speed
-            }
+        while(actions.length > 0) {            
+            this.handleAction(actions.shift())
+        }        
 
-            if (nextPixelPosition.y > display.container.y) {
-                display.container.y += speed
-            }
-            if (nextPixelPosition.y < display.container.y) {
-                display.container.y -= speed
-            }
-
-            if (Utils.distance(display.container.x, display.container.y, nextPixelPosition.x, nextPixelPosition.y) < speed) {
-                display.container.x = nextPixelPosition.x
-                display.container.y = nextPixelPosition.y
-            }
-            
-
-            /*
-            let newPosition = Utils.moveToward(display.container, nextPixelPosition, 1)
-
-            display.container.x = newPosition.x
-            display.container.y = newPosition.y
-            */
-        }
-    }
-
-    /**
-     * 
-     * @param {Message} message 
-     */
-    removeMessage(message) {
-        const battle = this.ecs.get("Battle", "battle")
-
-        battle.actions = battle.actions.filter(action => action !== message)
-    }
-
-    /**
-     * 
-     * @param {number} dt 
-     */
-    update(dt) {
-
-        /** @type {BattleComponent} */
-        const battle = this.ecs.get("Battle", "battle")
-
-        if (battle.newTurn) {           
-
-            this.ecs.actions.forEach(action => {
-
-                switch(action.type) {
-                    case "die":
-                        this.animateDie(dt, action)
-                        break
-
-                    case "attackMelee":
-                        this.animateAttackMelee(dt, action)
-                        break
-
-                    case "move":
-                        this.animateMove(dt, action)
-                        break
-
-                    case "attackRanged":
-                        this.animateAttackRanged(dt, action)
-                        break
-                }
-
-            })
-        }
+        this.timeline.play()
     }
 }
+
+export default AnimationSystem

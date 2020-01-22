@@ -75,7 +75,7 @@ class TurnSystem {
         const battle = this.ecs.get("Battle", "battle")
 
         
-        if (battle.actions.length === 0) {
+        if (battle.actions.length === 0 && battle.newTurn) {
 
             this.ecs.actors
                 .map(id => this.ecs.get(id, "actor"))   

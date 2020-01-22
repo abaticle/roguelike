@@ -12,6 +12,21 @@ export default class DrawSystem {
     }
 
 
+    /**
+     * @returns {BattleComponent}
+     */
+    getBattle() {
+        return this.ecs.get("Battle", "battle")
+    }
+
+    /**
+     * @returns {PrepareBattleComponent}
+     */
+    getPrepareBattle() {        
+        return this.ecs.get("PrepareBattle", "prepareBattle")
+    }
+
+
     drawMap() {
         this.ecs.drawMapEntity()
     }
@@ -100,9 +115,9 @@ export default class DrawSystem {
                     battle.drawn = true
                 }
 
-                if (!battle.actionsDrawn && this.ecs.get("Game", "game", "debug")) {
+                /*if (!battle.actionsDrawn && this.ecs.get("Game", "game", "debug")) {
                     this.drawActions()
-                }
+                }*/
                 break
                 
 
