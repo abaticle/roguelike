@@ -4,6 +4,7 @@
     "mithril": "^2.0.4",
     "pathfinding": "^0.4.18",
     "phaser": "^3.20.1",
-    "phaser-kinetic-scrolling-plugin": "^1.2.1"
+    "phaser-kinetic-scrolling-plugin": "^1.2.1",
+    "phaser3-rex-plugins": "^1.1.7"
   }
 }

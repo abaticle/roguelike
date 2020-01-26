@@ -26,6 +26,10 @@ export default class PreloadScene extends SceneBase {
      * Preload assets
      */
     preload() {
+        this.load.spritesheet(config.SPRITESHEET_ICONS, "assets/icons1.png", {
+            frameWidth: config.TILE_SIZE,
+            frameHeight: config.TILE_SIZE
+        })
         this.load.image("sprites", "assets/sprites.png")
         this.load.spritesheet("sprites1", "assets/sprites.png", {
             frameWidth: config.TILE_SIZE,
@@ -101,7 +105,7 @@ export default class PreloadScene extends SceneBase {
 
         const factory = new EntityFactory(this.ecs)
         
-        Utils.getRectanglePositions(10, 5, 13, 15).forEach(({x, y}) => {            
+        Utils.getRectanglePositions(15, 5, 16, 8).forEach(({x, y}) => {            
             
             factory.createActor({
                 teamId: computer,
@@ -172,11 +176,11 @@ export default class PreloadScene extends SceneBase {
 
         const factory = new EntityFactory(this.ecs)
 
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 30; i++) {
 
             let s = 0
 
-            if (i < 30) {
+            if (i < 10) {
                 s = squad1
             }
             else {
@@ -188,7 +192,7 @@ export default class PreloadScene extends SceneBase {
                 }
             }
             
-            let id = factory.createActor({
+            factory.createActor({
                 teamId: player,
                 squadId: s,
                 x: 0,
@@ -196,25 +200,6 @@ export default class PreloadScene extends SceneBase {
                 draw: false,
                 inBattle: false
             })
-
-            /*
-            if (s === squad1) {
-                let {
-                    position,
-                    actor,
-                    display
-                } = this.ecs.get(id)
-
-                position.x = 3
-                position.y = 2 + i
-
-                actor.inBattle = true
-
-                display.draw = true
-
-            }
-            */
-
         }
     }
 

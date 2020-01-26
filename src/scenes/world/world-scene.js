@@ -1,5 +1,6 @@
 import SceneBase from "../scene-base"
 import ECSHelper from "../../lib/ecs-helper";
+import config from "../../config";
 
 
 class AlignGrid {
@@ -67,8 +68,33 @@ export default class WorldScene extends SceneBase {
         })        
     }
 
+    preload() {
+
+        this.load.scenePlugin({
+            key: "rexuiplugin",
+            url: "assets/rexuiplugin.min.js",
+            sceneKey: "rexUI"
+        });
+
+    }
+
     create() {
         this.createSceneEntity()
+
+
+
+        let battleFrame = 81
+        let bossBattleFrame = 82
+        let merchandFrame = 199
+
+        this.add.sprite(50, 50, config.SPRITESHEET_ICONS, battleFrame)
+
+        
+
+        this.add.sprite(150, 50, config.SPRITESHEET_ICONS, bossBattleFrame)
+
+        
+        this.add.sprite(250, 50, config.SPRITESHEET_ICONS, merchandFrame)
         
         this.scene.start("PrepareBattle")
     }

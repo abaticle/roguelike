@@ -1,5 +1,6 @@
 import ECS from "../lib/ecs-helper"
 import Phaser from "phaser"
+//import RexUIPlugin from "phaser3-rex-plugins/templates/ui/ui-plugin.js"
 
 /**
  * Base Scene class
@@ -16,7 +17,9 @@ export default class SceneBase extends Phaser.Scene {
      * @param {object=} options.ui UI
      */
     constructor({key, ecs, systems, ui = {}}) {
-        super(key)
+        super({
+            key
+        })
 
         /** @type {string} key */
         this.key = key
