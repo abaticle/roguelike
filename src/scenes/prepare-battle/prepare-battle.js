@@ -20,6 +20,7 @@ export default class PrepareBattle extends SceneBase {
             ui: PrepareBattleUI
         })
         this.UIDrawn = false
+        this.rexUI = undefined
     }
 
     /**
@@ -28,22 +29,6 @@ export default class PrepareBattle extends SceneBase {
     create() {
         this.createSceneEntity()
         this.createUI()
-    }
-
-    button(scene, text) {
-
-        return scene.rexUI.add.label({
-            //width: 100,
-            height: 40,
-            background: scene.rexUI.add.roundRectangle(0, 0, 0, 0, 0, 0x7b5e57),
-            text: scene.add.text(0, 0, text, {
-                fontSize: 18
-            }),
-            space: {
-                left: 10,
-                right: 10,
-            }
-        });        
     }
 
     preload() {
@@ -73,6 +58,40 @@ export default class PrepareBattle extends SceneBase {
     }
 
 
+    /**
+     * 
+     * @param {EntityId} squadId 
+     */
+    onPlaceSquadClick(squadId) {
+        const prepareBattle = this.getPrepareBattle()
+
+        prepareBattle.placingSquadId = squadId
+
+        prepareBattle.squadListUI.visible = false
+        prepareBattle.squadConfirmUI.visible = true
+
+    }
+
+
+    onConfirmPlaceSquadClick(button, index, pointer, event) {
+        const prepareBattle = this.getPrepareBattle()
+
+        prepareBattle.placingSquadId = undefined
+        
+        prepareBattle.squadListUI.visible = true
+        prepareBattle.squadConfirmUI.visible = false
+    }
+
+    onCancelPlaceSquadClick() {
+        const prepareBattle = this.getPrepareBattle()
+
+        prepareBattle.placingSquadId = undefined
+        
+        prepareBattle.squadListUI.visible = true
+        prepareBattle.squadConfirmUI.visible = false
+    }
+
+
     getSquad(squadId) {
 
 
@@ -87,7 +106,7 @@ export default class PrepareBattle extends SceneBase {
                 centerX: "left"
             },
             
-            text: this.add.text(0, 0, `${squad.desc} (${this.ecs.getSquadSize(squadId)})`, {
+            text: this.add.text(0, 0, `${squadId}/${squad.desc} (${this.ecs.getSquadSize(squadId)})`, {
                 fontSize: 18
             }),
             space: {
@@ -97,22 +116,35 @@ export default class PrepareBattle extends SceneBase {
         })
 
 
-        let placeButton = this.rexUI.add.buttons({
+        let placeButton = this.rexUI.add.label({
+            width: 100,
+            height: 40,
+            background: this.rexUI.add.roundRectangle(0, 0, 0, 0, 10, config.COLOR_BUTTON_BACKGROUND),
+            text: this.add.text(0, 0, "Place", {
+                fontSize: 18
+            }),
+            space: {
+                left: 10,
+                right: 10,
+            }
+        })
+
+        placeButton.setData("squadId", squadId)
+
+        let buttons = this.rexUI.add.buttons({
             orientation: "x",
             buttons: [
-                this.rexUI.add.label({
-                    width: 100,
-                    height: 40,
-                    background: this.rexUI.add.roundRectangle(0, 0, 0, 0, 10, config.COLOR_BUTTON_BACKGROUND),
-                    text: this.add.text(0, 0, "Place", {
-                        fontSize: 18
-                    }),
-                    space: {
-                        left: 10,
-                        right: 10,
-                    }                    
-                })
+                placeButton
             ]
+        })
+
+
+        buttons.on("button.click", (button, index, pointer, event) => {
+            event.stopPropagation()
+
+            if (index === 0) {                
+                this.onPlaceSquadClick(button.getData("squadId"))
+            }
         })
 
 
@@ -136,39 +168,102 @@ export default class PrepareBattle extends SceneBase {
     }
 
     getSquadList() {
-
         const sizer = this.rexUI.add.sizer({
             align: "left",
-            paddingConfig: 30,
+            paddingConfig: 10,
             orientation: "y"
         })
-
 
         this.ecs.playerSquads.forEach(squadId => {
             sizer.add(this.getSquad(squadId))
         })
 
-
-        return sizer
-        
+        return sizer        
     }
 
-    createUI() {
+    /**
+     * @returns {PrepareBattleComponent} 
+     */
+    getPrepareBattle() {
+        return this.ecs.get("PrepareBattle", "prepareBattle")
+    }
 
-        const COLOR_PRIMARY = 0x4e342e
-        const COLOR_LIGHT = 0x7b5e57
-        const COLOR_DARK = 0x260e04
-        const COLOR_BOUND = 0xff0000
+    createSquadConfirmUI() {
 
-        this.rightPanel = this.rexUI.add.scrollablePanel({
+
+        let cancelButton = this.rexUI.add.label({
+            width: 100,
+            height: 40,
+            background: this.rexUI.add.roundRectangle(0, 0, 0, 0, 10, config.COLOR_BUTTON_BACKGROUND),
+            text: this.add.text(0, 0, "Cancel", {
+                fontSize: 18
+            }),
+            space: {
+                left: 10,
+                right: 10,
+            }
+        })
+
+        let confirmButton = this.rexUI.add.label({
+            width: 100,
+            height: 40,
+            background: this.rexUI.add.roundRectangle(0, 0, 0, 0, 10, config.COLOR_BUTTON_CONFIRM),
+            text: this.add.text(0, 0, "Confirm", {
+                fontSize: 18
+            }),
+            space: {
+                left: 10,
+                right: 10,
+            }
+        })
+        
+        const buttonsWidth = 150
+        const buttonsHeight = 600
+
+        let buttons = this.rexUI.add.buttons({
+            orientation: "x",
+            width: 200,
+            height: 80,
             anchor: {
-                //left: 'right-200',
-                centerY: 'center',
-                centerX: "right-200"
+                right: 'right-10',
+                top: "top+10"
             },
-            width: 300,
-            height: 820,
-            background: this.rexUI.add.roundRectangle(0, 0, 2, 2, 10, COLOR_PRIMARY),
+            buttons: [
+                cancelButton,
+                confirmButton
+            ]
+        })
+        .layout()
+
+
+        buttons.on("button.click", (button, index, pointer, event) => {
+            event.stopPropagation()
+            
+            switch (index) {
+                case 0:
+                    this.onCancelPlaceSquadClick()
+
+                case 1:
+                    this.onConfirmPlaceSquadClick()
+            }
+        })
+
+        return buttons
+    }
+
+    createSquadListUI() {
+
+        const panelWidth = 150
+        const panelHeight = 600
+
+        let panel = this.rexUI.add.scrollablePanel({
+            anchor: {
+                right: 'right-10',
+                top: "top+10"
+            },
+            width: panelWidth,
+            height: panelHeight,
+            background: this.rexUI.add.roundRectangle(0, 0, 2, 2, 10, config.COLOR_PRIMARY),
             scrollMode: 0,
             panel: {
                 child: this.getSquadList(),
@@ -177,8 +272,8 @@ export default class PrepareBattle extends SceneBase {
                 },
             },
             slider: {
-                track: this.rexUI.add.roundRectangle(0, 0, 20, 10, 10, COLOR_DARK),
-                thumb: this.rexUI.add.roundRectangle(0, 0, 0, 0, 13, COLOR_LIGHT),
+                track: this.rexUI.add.roundRectangle(0, 0, 20, 10, 10, config.COLOR_DARK),
+                thumb: this.rexUI.add.roundRectangle(0, 0, 0, 0, 13, config.COLOR_LIGHT),
             },
             space: {
                 left: 10,
@@ -191,20 +286,18 @@ export default class PrepareBattle extends SceneBase {
 
         })
         .layout()
-        .drawBounds(this.add.graphics(), COLOR_BOUND)
+        //.drawBounds(this.add.graphics(), )
 
-        window.rightPanel = this.rightPanel
+        return panel
     }
 
-    /**
-     * Create DOM
-     */
-    createUIOld() {
+    createUI() {
+        const prepareBattle = this.getPrepareBattle()        
 
-        this.ui.init(this.ecs)
+        prepareBattle.squadConfirmUI = this.createSquadConfirmUI()
+        prepareBattle.squadConfirmUI.visible = false
 
-        m.mount(document.getElementById("ui"), this.ui)
-
+        prepareBattle.squadListUI = this.createSquadListUI()
     }
 
     update() {

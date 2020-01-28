@@ -75,7 +75,9 @@ export const PrepareBattleComponent = {
     from: undefined,
     to: undefined,
     canConfirm: false,
-    battleReady: false
+    battleReady: false,
+    squadListUI: undefined,
+    squadConfirmUI: undefined
 }
 
 /** @type {MapComponent} */

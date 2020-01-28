@@ -82,6 +82,8 @@
  * @property {MousePosition} to Mouse to position
  * @property {boolean} canConfirm Squad formation can be confirmed ?
  * @property {boolean} battleReady Battle can be launched ? 
+ * @property {any} squadListUI Squad list 
+ * @property {any} squadConfirmUI Confirm squad placement
  */
 
 /**
