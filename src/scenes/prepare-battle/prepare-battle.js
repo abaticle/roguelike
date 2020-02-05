@@ -74,7 +74,17 @@ export default class PrepareBattle extends SceneBase {
 
 
     onConfirmPlaceSquadClick(button, index, pointer, event) {
+        
+        console.log("confirm")
         const prepareBattle = this.getPrepareBattle()
+
+        //Update inBattle flag
+        this.ecs.getSquadUnits(prepareBattle.placingSquadId)
+            .map(id => this.ecs.get(id))
+            .forEach(data => {
+                data.actor.inBattle = true
+                data.display.draw = true
+            })
 
         prepareBattle.placingSquadId = undefined
         
@@ -227,6 +237,9 @@ export default class PrepareBattle extends SceneBase {
             anchor: {
                 right: 'right-10',
                 top: "top+10"
+            },
+            click: {
+                mode: "release"
             },
             buttons: [
                 cancelButton,
